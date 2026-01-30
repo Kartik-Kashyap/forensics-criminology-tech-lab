@@ -6,6 +6,13 @@
 
 ![System in Action Snapshot](main-ui-ss.png)
 *(System in Action)*
+<br/><br/>
+![Handling Facial Occlusion Snapshot](occlusion-handle-ss.png)
+*(Smoothly Handles Extreme Facial Occlusion — Masked with Hairs on Forehead)*
+<br/><br/>
+![Pose Invariancy Snapshot](pose-invariant.png)
+*(Pose Invariant Recognition)*
+
 
 ---
 
@@ -29,7 +36,7 @@
 
 ## 📋 SYSTEM OVERVIEW
 
-The Forensic Suspect Detection System is a complete refactoring of facial recognition attendance software into a forensic-grade detection platform for law enforcement and security operations.
+The Forensic Suspect Detection System is a complete refactoring of my teams' own facial recognition attendance software (you can look at the video demo [here](https://youtu.be/KQrYrRnGDUs?si=lwzdpgS3F3aOgdzx)) into a forensic-grade detection platform for law enforcement and security operations.
 
 ### Key Capabilities
 
