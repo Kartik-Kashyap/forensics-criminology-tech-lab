@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analysis Report | Forensic Intelligence</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon.png') }}">
+</head>
+
+<body class="result-page">
+    <div class="scanlines"></div>
+    <div class="grid-overlay"></div>
+
+    <header>
+        <div class="logo-container">
+            <span class="logo-icon"><i class="fas fa-microscope"></i></span>
+            <div class="logo-text">
+                <h1>CRIME ANALYSIS UNIT</h1>
+                <p>FORENSIC DATA SCIENCE DIVISION</p>
+            </div>
+        </div>
+        <a href="/" class="back-link"><i class="fas fa-arrow-left"></i> NEW ANALYSIS</a>
+    </header>
+
+    <main>
+        <div class="report-container">
+            <div class="report-header">
+                <div class="report-id">REPORT_ID: #{{ year }}-{{ city_name[:3]|upper }}-{{ range(1000, 9999)|random }}
+                </div>
+                <div class="report-status high-priority">FORENSIC ANALYSIS COMPLETE</div>
+            </div>
+
+            <div class="report-content">
+                <div class="prediction-module">
+                    <div class="prediction-header">
+                        <h2>PREDICTION ANALYSIS RESULTS</h2>
+                        <div class="timestamp">ANALYSIS GENERATED: {{ now.strftime('%Y-%m-%d %H:%M:%S') if now else
+                            'REAL-TIME' }}</div>
+                    </div>
+
+                    <div class="data-grid">
+                        <div class="data-card">
+                            <span class="label">JURISDICTION</span>
+                            <span class="value">{{ city_name }}</span>
+                        </div>
+                        <div class="data-card">
+                            <span class="label">CLASSIFICATION</span>
+                            <span class="value">{{ crime_type }}</span>
+                        </div>
+                        <div class="data-card">
+                            <span class="label">TARGET YEAR</span>
+                            <span class="value highlighted">{{ year }}</span>
+                        </div>
+                        <div class="data-card">
+                            <span class="label">EST. POPULATION</span>
+                            <span class="value">{{ "%.2f"|format(population) }} Lakhs</span>
+                        </div>
+                    </div>
+
+                    <div class="main-result">
+                        <div class="result-box {{ crime_status.lower().replace(' ', '-') }}">
+                            <div class="status-badge">{{ crime_status|upper }}</div>
+                            <div class="rate-display">
+                                <span class="rate-value">{{ "%.2f"|format(crime_rate) }}</span>
+                                <span class="rate-unit">CASES PER LAKH</span>
+                            </div>
+                            <div class="total-cases">
+                                <span class="cases-count">{{ cases }}</span>
+                                <span class="cases-label">TOTAL PREDICTED INCIDENTS</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="forensic-insight">
+                        <h3><i class="fas fa-search"></i> ANALYST'S INSIGHT</h3>
+                        <p>Based on historical regression patterns and urban growth metrics, the {{ crime_type }} in {{
+                            city_name }} for the year {{ year }} shows a {{ crime_status.lower() }} trend. This
+                            projection assumes a steady 1% annual population increase and existing law enforcement
+                            parameters.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="report-footer">
+                <div class="signed-by">
+                    <p>ELECTRONICALLY SIGNED BY</p>
+                    <strong>KARTIK KASHYAP</strong>
+                    <span>Senior Forensic Analyst</span>
+                </div>
+                <div class="qr-placeholder">
+                    <i class="fas fa-qrcode"></i>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-info">
+                <p>&copy; 2026 Kartik Kashyap | Forensic Intelligence Suite</p>
+                <div class="footer-links">
+                    <a href="https://github.com/KartikKashyap-v" target="_blank"><i class="fab fa-github"></i>
+                        GitHub</a>
+                    <a href="https://www.linkedin.com/in/kartikkashyapv/" target="_blank"><i
+                            class="fab fa-linkedin"></i> LinkedIn</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>

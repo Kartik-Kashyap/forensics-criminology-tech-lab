@@ -1,0 +1,9 @@
+streamlit
+mne
+numpy
+pandas
+plotly
+langchain_community
+langchain_ollama
+scipy
+fpdf

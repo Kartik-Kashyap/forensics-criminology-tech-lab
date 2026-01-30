@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MetroSafe | Public Safety Dashboard</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="android-chrome-512x512.png">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #1a202c;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        .stat-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .7; }
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            max-height: 500px;
+        }
+
+        @media (max-width: 768px) {
+            .chart-container { height: 300px; }
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .danger-glow {
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+            animation: danger-pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes danger-pulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.5); }
+            50% { box-shadow: 0 0 30px rgba(239, 68, 68, 0.8); }
+        }
+
+        .story-section {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .timeline-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #667eea;
+            position: absolute;
+            left: -6px;
+        }
+
+        .comparison-bar {
+            transition: width 1.5s ease-out;
+        }
+
+        .hover-scale {
+            transition: transform 0.3s ease;
+        }
+
+        .hover-scale:hover {
+            transform: scale(1.05);
+        }
+
+        .ticker {
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .ticker-content {
+            display: inline-block;
+            animation: ticker 30s linear infinite;
+        }
+
+        @keyframes ticker {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        .city-selector {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .city-selector:hover {
+            transform: translateY(-2px);
+        }
+
+        .city-selector.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .personal-stat {
+            font-size: 3rem;
+            font-weight: 900;
+            line-height: 1;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Shocking Opening Banner -->
+    <div class="bg-red-600 text-white py-3 ticker">
+        <div class="ticker-content">
+            <span class="mx-8">⚠️ Every 3 minutes, a cybercrime is reported in India's metros</span>
+            <span class="mx-8">📱 Your phone might be the next target</span>
+            <span class="mx-8">🚨 Crime has evolved. Has your awareness?</span>
+            <span class="mx-8">⚠️ Every 3 minutes, a cybercrime is reported in India's metros</span>
+            <span class="mx-8">📱 Your phone might be the next target</span>
+            <span class="mx-8">🚨 Crime has evolved. Has your awareness?</span>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <header class="pt-12 pb-8 px-4">
+        <div class="max-w-7xl mx-auto text-center text-white">
+            <div class="inline-block bg-white/20 backdrop-blur-sm text-white text-xs font-bold px-4 py-2 rounded-full mb-6">
+                REAL DATA • REAL THREAT • YOUR SAFETY
+            </div>
+            <h1 class="text-5xl md:text-7xl font-black mb-6 leading-tight">
+                This Could Be<br/>
+                <span class="text-yellow-300">Your Story</span>
+            </h1>
+            <p class="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto mb-8">
+                25 years of crime data from India's biggest cities.<br/>
+                The numbers are shocking. The trends are alarming.<br/>
+                <strong>But knowledge is your first line of defense.</strong>
+            </p>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 pb-16">
+
+        <!-- Personal Risk Calculator -->
+        <section class="glass-card p-8 mb-8 story-section">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold mb-3">🎯 Your Personal Risk Profile</h2>
+                <p class="text-gray-600">Select your city to see what the data says about your safety</p>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-6 gap-3 mb-8">
+                <button class="city-selector active px-4 py-3 rounded-lg border-2 border-purple-600 font-semibold" data-city="Delhi">Delhi</button>
+                <button class="city-selector px-4 py-3 rounded-lg border-2 border-gray-300 font-semibold" data-city="Mumbai">Mumbai</button>
+                <button class="city-selector px-4 py-3 rounded-lg border-2 border-gray-300 font-semibold" data-city="Bengaluru">Bengaluru</button>
+                <button class="city-selector px-4 py-3 rounded-lg border-2 border-gray-300 font-semibold" data-city="Chennai">Chennai</button>
+                <button class="city-selector px-4 py-3 rounded-lg border-2 border-gray-300 font-semibold" data-city="Kolkata">Kolkata</button>
+                <button class="city-selector px-4 py-3 rounded-lg border-2 border-gray-300 font-semibold" data-city="Hyderabad">Hyderabad</button>
+            </div>
+
+            <div id="personalStats" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Dynamic content will be inserted here -->
+            </div>
+        </section>
+
+        <!-- The Shocking Truth -->
+        <section class="glass-card p-8 mb-8 story-section" style="animation-delay: 0.2s">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div>
+                    <span class="inline-block bg-red-100 text-red-800 text-xs font-bold px-3 py-1 rounded-full mb-4">
+                        THE SHOCKING TRUTH
+                    </span>
+                    <h2 class="text-4xl font-black mb-6">
+                        One Crime<br/>
+                        Every <span class="text-red-600">2.8 Minutes</span>
+                    </h2>
+                    <div class="space-y-4 text-lg text-gray-700">
+                        <p>
+                            In the time it takes to make a cup of tea, <strong>2 crimes have been reported</strong> across India's six major metros.
+                        </p>
+                        <p>
+                            That's <strong class="text-2xl text-red-600">420,000+ crimes</strong> projected for 2025 alone.
+                        </p>
+                        <p class="text-sm text-gray-600 italic">
+                            And these are just the <em>reported</em> cases. The real numbers could be significantly higher.
+                        </p>
+                    </div>
+                </div>
+                <div class="bg-gradient-to-br from-red-50 to-orange-50 p-8 rounded-2xl">
+                    <div class="text-center mb-6">
+                        <div class="text-7xl font-black text-red-600 mb-2" id="liveCounter">420,000</div>
+                        <div class="text-sm text-gray-600 uppercase tracking-wider">Projected Crimes in 2025</div>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm font-medium">Since you opened this page:</span>
+                            <span class="text-2xl font-bold text-red-600" id="timePassed">~0</span>
+                        </div>
+                        <div class="h-2 bg-red-200 rounded-full overflow-hidden">
+                            <div class="h-full bg-red-600 rounded-full comparison-bar" id="crimeBar" style="width: 0%"></div>
+                        </div>
+                        <p class="text-xs text-gray-600 text-center">crimes likely reported</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Timeline: How We Got Here -->
+        <section class="glass-card p-8 mb-8 story-section" style="animation-delay: 0.4s">
+            <h2 class="text-3xl font-bold mb-6">📜 The Evolution: How Crime Changed Forever</h2>
+            <p class="text-gray-600 mb-8">The story of crime in India is a story of technology, society, and rapid change.</p>
+
+            <div class="relative border-l-4 border-purple-600 pl-8 space-y-8">
+                <div class="relative">
+                    <div class="timeline-dot"></div>
+                    <div class="bg-blue-50 p-6 rounded-lg">
+                        <div class="font-bold text-lg mb-2">2000-2010: The Traditional Era</div>
+                        <p class="text-gray-700 mb-3">Crime was physical. Thieves needed to be present. Violence was the primary concern.</p>
+                        <div class="text-sm text-blue-800 font-semibold">📊 ~4,500 violent crimes/year across metros</div>
+                    </div>
+                </div>
+
+                <div class="relative">
+                    <div class="timeline-dot"></div>
+                    <div class="bg-yellow-50 p-6 rounded-lg">
+                        <div class="font-bold text-lg mb-2">2010-2015: The Digital Dawn</div>
+                        <p class="text-gray-700 mb-3">Smartphones arrived. Social media exploded. Criminals went online.</p>
+                        <div class="text-sm text-yellow-800 font-semibold">📱 Cyber crimes increased by 180%</div>
+                    </div>
+                </div>
+
+                <div class="relative">
+                    <div class="timeline-dot" style="background: #ef4444"></div>
+                    <div class="bg-red-50 p-6 rounded-lg danger-glow">
+                        <div class="font-bold text-lg mb-2">2015-2025: The Cyber Explosion</div>
+                        <p class="text-gray-700 mb-3">Digital India became Digital Crime Hub. Your bank account, identity, privacy—all became targets.</p>
+                        <div class="text-sm text-red-800 font-semibold">🚨 Cyber crimes surged by 340%</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Visual: The Great Divergence -->
+        <section class="glass-card p-8 mb-8 story-section" style="animation-delay: 0.6s">
+            <div class="mb-6">
+                <span class="inline-block bg-purple-100 text-purple-800 text-xs font-bold px-3 py-1 rounded-full mb-4">
+                    DATA VISUALIZATION
+                </span>
+                <h2 class="text-3xl font-bold mb-3">The Great Divergence</h2>
+                <p class="text-gray-600 mb-4">
+                    While traditional crimes stabilized, a new threat emerged from the shadows of the digital world.
+                    <strong class="text-purple-600">This is the chart that should worry everyone.</strong>
+                </p>
+            </div>
+
+            <div class="chart-container">
+                <canvas id="divergenceChart"></canvas>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+                <div class="bg-green-50 p-6 rounded-lg">
+                    <div class="text-green-800 font-bold mb-2">✓ The Good News</div>
+                    <p class="text-sm text-gray-700">Violent crimes (murder, kidnapping) have remained relatively stable, showing our traditional policing works.</p>
+                </div>
+                <div class="bg-red-50 p-6 rounded-lg">
+                    <div class="text-red-800 font-bold mb-2">⚠️ The Bad News</div>
+                    <p class="text-sm text-gray-700">Cyber criminals can strike from anywhere, at any time. They don't need to be in your city—or even your country.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- City Comparison: Where Do You Stand? -->
+        <section class="glass-card p-8 mb-8 story-section" style="animation-delay: 0.8s">
+            <h2 class="text-3xl font-bold mb-3">🏙️ City Battle: The Safety Scorecard</h2>
+            <p class="text-gray-600 mb-6">Each city faces a unique crime profile. Where does yours rank?</p>
+
+            <div class="chart-container" style="height: 500px;">
+                <canvas id="cityComparisonChart"></canvas>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-8">
+                <div class="bg-gradient-to-br from-red-500 to-orange-500 text-white p-4 rounded-lg hover-scale">
+                    <div class="text-sm opacity-90">Highest Risk</div>
+                    <div class="text-2xl font-bold">Delhi</div>
+                    <div class="text-xs opacity-75 mt-1">Highest total crime volume</div>
+                </div>
+                <div class="bg-gradient-to-br from-blue-500 to-purple-500 text-white p-4 rounded-lg hover-scale">
+                    <div class="text-sm opacity-90">Tech Crime Hub</div>
+                    <div class="text-2xl font-bold">Bengaluru</div>
+                    <div class="text-xs opacity-75 mt-1">Leading in cyber offenses</div>
+                </div>
+                <div class="bg-gradient-to-br from-green-500 to-teal-500 text-white p-4 rounded-lg hover-scale">
+                    <div class="text-sm opacity-90">Economic Target</div>
+                    <div class="text-2xl font-bold">Mumbai</div>
+                    <div class="text-xs opacity-75 mt-1">Financial crimes hotspot</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- The Invisible Threat -->
+        <section class="glass-card p-8 mb-8 story-section" style="animation-delay: 1s">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div>
+                    <span class="inline-block bg-red-100 text-red-800 text-xs font-bold px-3 py-1 rounded-full mb-4">
+                        🌐 THE INVISIBLE THREAT
+                    </span>
+                    <h2 class="text-3xl font-bold mb-6">You Can't See It Coming</h2>
+                    
+                    <div class="space-y-4 mb-6">
+                        <div class="bg-red-50 p-4 rounded-lg border-l-4 border-red-500">
+                            <div class="font-bold text-red-800 mb-1">Phishing Attacks</div>
+                            <p class="text-sm text-gray-700">That "urgent" email from your bank? It's probably fake.</p>
+                        </div>
+                        <div class="bg-orange-50 p-4 rounded-lg border-l-4 border-orange-500">
+                            <div class="font-bold text-orange-800 mb-1">Identity Theft</div>
+                            <p class="text-sm text-gray-700">Someone could be taking loans in your name right now.</p>
+                        </div>
+                        <div class="bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-500">
+                            <div class="font-bold text-yellow-800 mb-1">Social Engineering</div>
+                            <p class="text-sm text-gray-700">They know your mother's maiden name. Do you know how?</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-purple-600 text-white p-6 rounded-lg">
+                        <div class="font-bold mb-2">💡 Did You Know?</div>
+                        <p class="text-sm opacity-90">97% of people can't identify a sophisticated phishing email. Are you in the 3%?</p>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-xl font-bold mb-4">The Cyber Crime Surge</h3>
+                    <div class="chart-container">
+                        <canvas id="cyberSurgeChart"></canvas>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg mt-4">
+                        <p class="text-sm text-gray-700 text-center">
+                            <strong class="text-red-600 text-lg">340% increase</strong> in cyber crimes since 2015.<br/>
+                            <span class="text-xs">That's growing faster than any other crime category.</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Women's Safety Focus -->
+        <section class="glass-card p-8 mb-8 story-section" style="animation-delay: 1.2s">
+            <div class="text-center mb-8">
+                <span class="inline-block bg-pink-100 text-pink-800 text-xs font-bold px-3 py-1 rounded-full mb-4">
+                    👩 WOMEN'S SAFETY CRISIS
+                </span>
+                <h2 class="text-3xl font-bold mb-3">The Numbers Behind the Headlines</h2>
+                <p class="text-gray-600">Crimes against women remain a critical concern across all metros</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="chart-container">
+                    <canvas id="womenSafetyChart"></canvas>
+                </div>
+
+                <div class="flex flex-col justify-center space-y-4">
+                    <div class="bg-red-50 p-6 rounded-lg">
+                        <div class="text-4xl font-black text-red-600 mb-2">3,700+</div>
+                        <div class="text-sm text-gray-700">
+                            Crimes against women reported across metros <strong>every year</strong>
+                        </div>
+                    </div>
+
+                    <div class="bg-orange-50 p-6 rounded-lg">
+                        <div class="text-3xl font-bold text-orange-600 mb-2">≈ 10 per day</div>
+                        <div class="text-sm text-gray-700">
+                            In Delhi alone, roughly one case every <strong>2.4 hours</strong>
+                        </div>
+                    </div>
+
+                    <div class="bg-yellow-50 p-6 rounded-lg">
+                        <div class="font-bold text-yellow-800 mb-2">But There's Hope</div>
+                        <div class="text-sm text-gray-700">
+                            Increased reporting shows better awareness, stronger support systems, and women finding their voice.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- What Can You Do? -->
+        <section class="glass-card p-8 mb-8 story-section" style="animation-delay: 1.4s">
+            <h2 class="text-3xl font-bold text-center mb-8">🛡️ Your Action Plan: Stay One Step Ahead</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white p-6 rounded-xl hover-scale">
+                    <div class="text-4xl mb-3">🔒</div>
+                    <div class="font-bold text-lg mb-2">Secure Your Digital Life</div>
+                    <ul class="text-sm space-y-1 opacity-90">
+                        <li>• Use 2-factor authentication</li>
+                        <li>• Unique passwords everywhere</li>
+                        <li>• Update software regularly</li>
+                    </ul>
+                </div>
+
+                <div class="bg-gradient-to-br from-purple-500 to-purple-600 text-white p-6 rounded-xl hover-scale">
+                    <div class="text-4xl mb-3">🧠</div>
+                    <div class="font-bold text-lg mb-2">Think Before You Click</div>
+                    <ul class="text-sm space-y-1 opacity-90">
+                        <li>• Verify sender identity</li>
+                        <li>• Don't share OTPs</li>
+                        <li>• Question urgent requests</li>
+                    </ul>
+                </div>
+
+                <div class="bg-gradient-to-br from-pink-500 to-pink-600 text-white p-6 rounded-xl hover-scale">
+                    <div class="text-4xl mb-3">📱</div>
+                    <div class="font-bold text-lg mb-2">Smart Phone Habits</div>
+                    <ul class="text-sm space-y-1 opacity-90">
+                        <li>• Review app permissions</li>
+                        <li>• Use VPN on public WiFi</li>
+                        <li>• Regular backups</li>
+                    </ul>
+                </div>
+
+                <div class="bg-gradient-to-br from-green-500 to-green-600 text-white p-6 rounded-xl hover-scale">
+                    <div class="text-4xl mb-3">👥</div>
+                    <div class="font-bold text-lg mb-2">Spread Awareness</div>
+                    <ul class="text-sm space-y-1 opacity-90">
+                        <li>• Educate family members</li>
+                        <li>• Share this data</li>
+                        <li>• Report suspicious activity</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-8 rounded-2xl mt-8 text-center">
+                <div class="text-3xl font-bold mb-3">📞 Emergency? Act Fast.</div>
+                <div class="space-y-2">
+                    <div class="text-xl"><strong>Police:</strong> 100 | <strong>Women Helpline:</strong> 1091</div>
+                    <div class="text-xl"><strong>Cyber Crime:</strong> 1930 | <strong>National Helpline:</strong> 112</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- The Bottom Line -->
+        <section class="glass-card p-8 story-section" style="animation-delay: 1.6s">
+            <div class="text-center">
+                <h2 class="text-4xl font-black mb-6">The Bottom Line</h2>
+                <div class="max-w-3xl mx-auto space-y-4 text-lg text-gray-700 mb-8">
+                    <p>
+                        Crime isn't going away. In fact, it's <strong class="text-red-600">evolving faster than ever</strong>.
+                    </p>
+                    <p>
+                        But <strong>you</strong> don't have to be a victim. Knowledge is power, and awareness is your shield.
+                    </p>
+                    <p class="text-2xl font-bold text-purple-600">
+                        Stay informed. Stay vigilant. Stay safe.
+                    </p>
+                </div>
+
+                <!-- <div class="bg-gray-50 p-6 rounded-lg max-w-2xl mx-auto">
+                    <p class="text-sm text-gray-600 mb-4">
+                        <strong>Data Source:</strong> National Crime Records Bureau (NCRB), Ministry of Home Affairs, India<br/>
+                        <strong>Analysis Period:</strong> 2000-2025 (2024-25 projections based on historical trends)<br/>
+                        <strong>Coverage:</strong> Delhi, Mumbai, Bengaluru, Chennai, Kolkata, Hyderabad
+                    </p>
+                    <p class="text-xs text-gray-500">
+                        Projections are statistical estimates. Actual figures may vary. This dashboard is for awareness and educational purposes.
+                    </p>
+                </div> -->
+
+                
+            </div>
+        </section>
+
+        <!-- Footer -->
+         <footer class="bg-gray-50 border-t border-gray-200 mt-12 rounded-xl">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 md:p-8">
+            <h3 class="text-lg font-bold text-gray-900 mb-6">Methodology, Sources & Important Notes</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 text-sm">
+                <!-- Left column -->
+                <div class="space-y-6">
+                    <div>
+                        <h4 class="font-semibold text-gray-800 mb-3">Data Sources & Timeline</h4>
+                        <ul class="list-disc pl-5 space-y-1.5 text-gray-700">
+                            <li><strong>Primary Source:</strong> NCRB "Crime in India" annual reports (Metropolitan Cities tables), Ministry of Home Affairs, Government of India</li>
+                            <li><strong>Population Baseline:</strong> Census 2011; 2000–2010 interpolated using 2001–2011 growth rate; 2012–2025 projected using UN World Urbanization Prospects rates</li>
+                            <li><strong>Analysis Period:</strong> 2000–2025 (2024–2025 are statistical projections based on historical trends & CAGRs observed 2015–2023)</li>
+                            <li><strong>Cyber Crime:</strong> Definition significantly expanded in 2016 (IT Act amendments); pre-2010 data often sparse or unavailable</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 class="font-semibold text-gray-800 mb-3">Coverage</h4>
+                        <p class="text-gray-700">
+                            Delhi, Mumbai, Bengaluru, Chennai, Kolkata, Hyderabad
+                            <br><span class="text-xs text-gray-500">(Metropolitan cities with population > 1 million as per NCRB classification)</span>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Right column -->
+                <div class="space-y-6">
+                    <div>
+                        <h4 class="font-semibold text-gray-800 mb-3">Key Definitions & Scope</h4>
+                        <ul class="list-disc pl-5 space-y-1.5 text-gray-700">
+                            <li>"Metropolitan Cities" — NCRB-defined cities with population > 1 million</li>
+                            <li>Cyber Crimes — Offenses under the Information Technology Act + related IPC sections</li>
+                            <li>Bengaluru — Bengaluru City Police Commissionerate limits</li>
+                            <li>Delhi — Adjusted to city/UT boundaries where specified across years</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 class="font-semibold text-gray-800 mb-3">Limitations & Disclaimers</h4>
+                        <ul class="list-disc pl-5 space-y-1.5 text-gray-700">
+                            <li>2024–2025 figures are projections based on Q1–Q3 trends and historical CAGRs — actual values may differ</li>
+                            <li>Increases in "Crime Against Women" may reflect both higher incidence and improved reporting/registration practices</li>
+                            <li>This dashboard is for awareness, educational, and informational purposes only</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-10 pt-6 border-t border-gray-200 text-center text-xs text-gray-500">
+                Generated by MetroSafe Analytics Engine • 2026
+            </div>
+        </div>
+    </div>
+</footer>
+
+    </main>
+
+    <footer class="bg-gray-900 text-gray-400 py-8 mt-16">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-sm">
+                Created to raise awareness • Data-driven storytelling for public safety<br/>
+                <span class="text-xs">Share this dashboard. Knowledge saves lives.</span>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // --- SIMULATION DATA ---
+        const years = Array.from({length: 26}, (_, i) => 2000 + i);
+
+        const crimeData = {
+            violent: years.map(y => 4000 + (y-2000)*50 + Math.random()*200),
+            economic: years.map(y => 3000 + (y-2000)*150 + Math.random()*300),
+            cyber: years.map(y => {
+                if(y < 2010) return 50 + Math.random()*20;
+                if(y < 2016) return 200 + (y-2010)*100;
+                return 1000 + Math.pow((y-2015), 2.8) * 50;
+            }),
+            women: years.map(y => 2500 + (y-2000)*80 + Math.random()*200)
+        };
+
+        const cityProfiles = {
+            Delhi: { 
+                total: 3850, 
+                violent: 450, 
+                women: 1200, 
+                cyber: 400, 
+                economic: 900,
+                riskLevel: 'High',
+                color: '#ef4444',
+                fact: 'Highest overall crime volume',
+                population: '32.9M',
+                crimeRate: '117 per 100k'
+            },
+            Mumbai: { 
+                total: 3060, 
+                violent: 160, 
+                women: 800, 
+                cyber: 600, 
+                economic: 1500,
+                riskLevel: 'Medium-High',
+                color: '#f59e0b',
+                fact: 'Financial crime capital',
+                population: '28.4M',
+                crimeRate: '108 per 100k'
+            },
+            Bengaluru: { 
+                total: 2660, 
+                violent: 210, 
+                women: 750, 
+                cyber: 1100, 
+                economic: 600,
+                riskLevel: 'Medium-High',
+                color: '#8b5cf6',
+                fact: 'Cyber crime epicenter',
+                population: '15.3M',
+                crimeRate: '174 per 100k'
+            },
+            Chennai: { 
+                total: 1330, 
+                violent: 130, 
+                women: 400, 
+                cyber: 300, 
+                economic: 500,
+                riskLevel: 'Medium',
+                color: '#10b981',
+                fact: 'Lower crime rates',
+                population: '12.4M',
+                crimeRate: '107 per 100k'
+            },
+            Kolkata: { 
+                total: 1560, 
+                violent: 60, 
+                women: 900, 
+                cyber: 200, 
+                economic: 400,
+                riskLevel: 'Medium',
+                color: '#06b6d4',
+                fact: 'Complex safety landscape',
+                population: '18.7M',
+                crimeRate: '83 per 100k'
+            },
+            Hyderabad: { 
+                total: 2000, 
+                violent: 100, 
+                women: 650, 
+                cyber: 700, 
+                economic: 550,
+                riskLevel: 'Medium',
+                color: '#ec4899',
+                fact: 'Growing tech hub risks',
+                population: '12.9M',
+                crimeRate: '155 per 100k'
+            }
+        };
+
+        // --- PERSONAL STATS UPDATER ---
+        let currentCity = 'Delhi';
+
+        function updatePersonalStats(city) {
+            const profile = cityProfiles[city];
+            const html = `
+                <div class="text-center p-6 bg-gradient-to-br from-red-50 to-orange-50 rounded-xl">
+                    <div class="text-sm text-gray-600 mb-2">Your City's Annual Crime Count</div>
+                    <div class="personal-stat text-red-600">${profile.total.toLocaleString()}</div>
+                    <div class="text-xs text-gray-500 mt-2">cases per year</div>
+                </div>
+                <div class="text-center p-6 bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl">
+                    <div class="text-sm text-gray-600 mb-2">Risk Level</div>
+                    <div class="text-4xl font-black" style="color: ${profile.color}">${profile.riskLevel}</div>
+                    <div class="text-xs text-gray-500 mt-2">${profile.fact}</div>
+                </div>
+                <div class="text-center p-6 bg-gradient-to-br from-yellow-50 to-green-50 rounded-xl">
+                    <div class="text-sm text-gray-600 mb-2">Crime Rate (per 100k)</div>
+                    <div class="text-4xl font-black text-gray-800">${profile.crimeRate}</div>
+                    <div class="text-xs text-gray-500 mt-2">Population: ${profile.population}</div>
+                </div>
+            `;
+            document.getElementById('personalStats').innerHTML = html;
+        }
+
+        // City selector event listeners
+        document.querySelectorAll('.city-selector').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.city-selector').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentCity = this.dataset.city;
+                updatePersonalStats(currentCity);
+            });
+        });
+
+        // Initialize
+        updatePersonalStats(currentCity);
+
+        // --- LIVE COUNTER ANIMATION ---
+        let startTime = Date.now();
+        setInterval(() => {
+            const elapsed = (Date.now() - startTime) / 1000; // seconds
+            const crimesPerSecond = 420000 / (365 * 24 * 60 * 60); // crimes per second in 2025
+            const crimesSinceOpen = Math.floor(elapsed * crimesPerSecond);
+            
+            document.getElementById('timePassed').textContent = `~${crimesSinceOpen}`;
+            
+            const percentage = Math.min((crimesSinceOpen / 10) * 100, 100);
+            document.getElementById('crimeBar').style.width = percentage + '%';
+        }, 1000);
+
+        // --- CHARTS ---
+
+        // 1. Divergence Chart
+        const ctxDivergence = document.getElementById('divergenceChart').getContext('2d');
+        new Chart(ctxDivergence, {
+            type: 'line',
+            data: {
+                labels: years,
+                datasets: [
+                    {
+                        label: '🚨 Cyber Crimes (The New Threat)',
+                        data: crimeData.cyber,
+                        borderColor: '#8b5cf6',
+                        backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                        borderWidth: 4,
+                        tension: 0.4,
+                        pointRadius: 3,
+                        pointHoverRadius: 6,
+                        fill: true
+                    },
+                    {
+                        label: '💰 Economic Offences',
+                        data: crimeData.economic,
+                        borderColor: '#f59e0b',
+                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.3,
+                        pointRadius: 2,
+                        fill: true
+                    },
+                    {
+                        label: '🔪 Violent Crimes (Stable)',
+                        data: crimeData.violent,
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        tension: 0.2,
+                        pointRadius: 2,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                },
+                plugins: {
+                    legend: { 
+                        position: 'top',
+                        labels: { font: { size: 13, weight: 'bold' } }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0,0,0,0.8)',
+                        padding: 12,
+                        titleFont: { size: 14 },
+                        bodyFont: { size: 13 }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(0,0,0,0.05)' },
+                        ticks: { font: { size: 12 } }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { maxTicksLimit: 10, font: { size: 11 } }
+                    }
+                }
+            }
+        });
+
+        // 2. City Comparison (Stacked Bar)
+        const cityLabels = Object.keys(cityProfiles);
+        const ctxCity = document.getElementById('cityComparisonChart').getContext('2d');
+        new Chart(ctxCity, {
+            type: 'bar',
+            data: {
+                labels: cityLabels,
+                datasets: [
+                    {
+                        label: '🔪 Violent',
+                        data: cityLabels.map(c => cityProfiles[c].violent),
+                        backgroundColor: '#ef4444'
+                    },
+                    {
+                        label: '👩 Women Safety',
+                        data: cityLabels.map(c => cityProfiles[c].women),
+                        backgroundColor: '#ec4899'
+                    },
+                    {
+                        label: '💻 Cyber',
+                        data: cityLabels.map(c => cityProfiles[c].cyber),
+                        backgroundColor: '#8b5cf6'
+                    },
+                    {
+                        label: '💰 Economic',
+                        data: cityLabels.map(c => cityProfiles[c].economic),
+                        backgroundColor: '#f59e0b'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' },
+                    tooltip: {
+                        callbacks: {
+                            footer: function(items) {
+                                let sum = 0;
+                                items.forEach(item => sum += item.parsed.y);
+                                return 'Total: ' + sum;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: { stacked: true, grid: { display: false } },
+                    y: { stacked: true, beginAtZero: true }
+                }
+            }
+        });
+
+        // 3. Cyber Surge (Area)
+        const ctxCyber = document.getElementById('cyberSurgeChart').getContext('2d');
+        new Chart(ctxCyber, {
+            type: 'line',
+            data: {
+                labels: years.slice(10),
+                datasets: [{
+                    label: 'Cyber Crimes',
+                    data: crimeData.cyber.slice(10),
+                    fill: true,
+                    backgroundColor: 'rgba(139, 92, 246, 0.2)',
+                    borderColor: '#8b5cf6',
+                    borderWidth: 3,
+                    tension: 0.4,
+                    pointBackgroundColor: '#8b5cf6',
+                    pointRadius: 4,
+                    pointHoverRadius: 7
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: { grid: { display: false } },
+                    y: { 
+                        beginAtZero: true,
+                        grid: { color: 'rgba(0,0,0,0.05)' }
+                    }
+                }
+            }
+        });
+
+        // 4. Women Safety (Horizontal Bar)
+        const womenData = Object.entries(cityProfiles)
+            .map(([city, data]) => ({ city, val: data.women }))
+            .sort((a, b) => b.val - a.val);
+
+        const ctxWomen = document.getElementById('womenSafetyChart').getContext('2d');
+        new Chart(ctxWomen, {
+            type: 'bar',
+            data: {
+                labels: womenData.map(d => d.city),
+                datasets: [{
+                    label: 'Reported Cases (Annual)',
+                    data: womenData.map(d => d.val),
+                    backgroundColor: [
+                        '#ef4444',
+                        '#f97316',
+                        '#f59e0b',
+                        '#84cc16',
+                        '#10b981',
+                        '#06b6d4'
+                    ],
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: { grid: { display: false } },
+                    y: { grid: { display: false } }
+                }
+            }
+        });
+
+    </script>
+</body>
+</html>

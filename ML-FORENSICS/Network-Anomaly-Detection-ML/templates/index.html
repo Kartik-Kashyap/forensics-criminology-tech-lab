@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CYBER-SENTINEL | Forensic Network Analysis</title>
+    <!-- <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛜</text></svg>"> -->
+    <link rel="icon" type="image/png" href="flaticon.png">
+
+    
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=JetBrains+Mono:wght@300;500&display=swap"
+        rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #050a0f;
+            --accent-primary: #00ff9d;
+            --accent-secondary: #00d4ff;
+            --danger: #ff3e3e;
+            --surface: #0a1926;
+            --text-glow: 0 0 10px rgba(0, 255, 157, 0.5);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-rows: auto 1fr;
+            gap: 20px;
+            overflow: hidden;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: #e0f2ff;
+            font-family: 'JetBrains Mono', monospace;
+            overflow-x: hidden;
+            background-image:
+                radial-gradient(circle at 50% 50%, rgba(0, 212, 255, 0.05) 0%, transparent 70%),
+                linear-gradient(rgba(10, 25, 38, 0.5) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(10, 25, 38, 0.5) 1px, transparent 1px);
+            background-size: 100% 100%, 50px 50px, 50px 50px;
+        }
+
+        h1,
+        h2,
+        h3 {
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            grid-template-rows: auto auto 1fr;
+            height: 100vh;
+            padding: 20px;
+            gap: 20px;
+        }
+
+        header {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--accent-primary);
+            padding-bottom: 10px;
+            box-shadow: 0 4px 15px -5px rgba(0, 255, 157, 0.3);
+        }
+
+        .logo {
+            font-size: 24px;
+            color: var(--accent-primary);
+            text-shadow: var(--text-glow);
+        }
+
+        .status-badge {
+            padding: 5px 15px;
+            border: 1px solid var(--accent-primary);
+            border-radius: 20px;
+            font-size: 12px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 0.6;
+                box-shadow: 0 0 0 0 rgba(0, 255, 157, 0.4);
+            }
+
+            70% {
+                opacity: 1;
+                box-shadow: 0 0 0 10px rgba(0, 255, 157, 0);
+            }
+
+            100% {
+                opacity: 0.6;
+                box-shadow: 0 0 0 0 rgba(0, 255, 157, 0);
+            }
+        }
+
+        .sidebar {
+            background: var(--surface);
+            padding: 20px;
+            border: 1px solid #1a3a5a;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            overflow-y: hidden;
+        }
+
+        .stats-grid {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            padding: 15px;
+            border-left: 4px solid var(--accent-secondary);
+            border-radius: 4px;
+        }
+
+        .stat-label {
+            font-size: 10px;
+            color: #88a0b0;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--accent-secondary);
+        }
+
+        /* NEW: Timeline Chart Container */
+        .timeline-container {
+            grid-column: 2;
+            background: var(--surface);
+            border: 1px solid #1a3a5a;
+            border-radius: 8px;
+            padding: 15px;
+            height: 250px;
+        }
+
+        .timeline-header {
+            font-size: 12px;
+            color: var(--accent-primary);
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .log-container {
+            grid-column: 1 / -1;
+            flex: 0 0 520px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #1a3a5a;
+            border-radius: 8px;
+            padding: 10px;
+            overflow-y: hidden;
+            font-size: 12px;
+            position: relative;
+            overflow-x: hidden; 
+        }
+
+        .log-container #logFeed {
+            height: calc(100% - 48px);
+            /* subtract header + margins */
+            overflow-y: auto;
+            padding-right: 8px;
+            /* space for scrollbar */
+            font-size: 12px;
+            line-height: 1.45;
+        }
+
+        /* Optional: nicer scrollbar styling */
+        .log-container #logFeed::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .log-container #logFeed::-webkit-scrollbar-track {
+            background: #0d1e2e;
+        }
+
+        .log-container #logFeed::-webkit-scrollbar-thumb {
+            background: #1a3a5a;
+            border-radius: 4px;
+        }
+
+        .log-container #logFeed::-webkit-scrollbar-thumb:hover {
+            background: #00d4ff44;
+        }
+
+        .log-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #1a3a5a;
+            font-weight: bold;
+            color: var(--accent-primary);
+        }
+
+        .log-entry {
+            margin-bottom: 4px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 4px 0;
+            display: grid;
+            grid-template-columns: 80px 100px 1fr 100px;
+            gap: 10px;
+        }
+
+        .log-entry.anomaly {
+            color: var(--danger);
+            animation: flicker 0.5s;
+        }
+
+        .log-entry.normal {
+            color: #88c0d0;
+        }
+
+        @keyframes flicker {
+            0% {
+                opacity: 0;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        button {
+            background: transparent;
+            border: 1px solid var(--accent-primary);
+            color: var(--accent-primary);
+            padding: 10px;
+            cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            font-size: 11px;
+        }
+
+        button:hover {
+            background: var(--accent-primary);
+            color: var(--bg-color);
+            box-shadow: var(--text-glow);
+        }
+
+        button.active {
+            background: var(--danger);
+            border-color: var(--danger);
+            color: white;
+        }
+
+        button.network-mode {
+            border-color: var(--accent-secondary);
+            color: var(--accent-secondary);
+        }
+
+        button.network-mode.active {
+            background: var(--accent-secondary);
+            color: var(--bg-color);
+        }
+
+        .risk-meter {
+            height: 10px;
+            background: #1a3a5a;
+            border-radius: 5px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+
+        .risk-fill {
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s, background-color 0.5s;
+        }
+
+        .scanline {
+            width: 100%;
+            height: 100px;
+            z-index: 10;
+            background: linear-gradient(0deg, rgba(0, 255, 157, 0) 0%, rgba(0, 255, 157, 0.1) 50%, rgba(0, 255, 157, 0) 100%);
+            opacity: 0.1;
+            position: absolute;
+            bottom: 100%;
+            animation: scanline 10s linear infinite;
+        }
+
+        @keyframes scanline {
+            0% {
+                bottom: 100%;
+            }
+
+            100% {
+                bottom: -100px;
+            }
+        }
+
+        .mode-indicator {
+            font-size: 10px;
+            color: #88a0b0;
+            margin-top: 5px;
+            padding: 5px;
+            background: rgba(0, 255, 157, 0.1);
+            border-radius: 3px;
+            text-align: center;
+        }
+
+        .threat-summary-container {
+    flex: 0 0 300px;          /* slightly taller than timeline for better donut visibility */
+    background: var(--surface);
+    border: 1px solid #1a3a5a;
+    border-radius: 8px;
+    padding: 16px;
+}
+
+.summary-header {
+    color: var(--accent-primary);
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+/* --- UPDATED LOG CONTAINER CSS --- */
+
+/* 1. Fix the Header to match the Data Columns */
+.log-header {
+    display: grid;                         /* Changed from flex to grid */
+    grid-template-columns: 80px 100px 1fr 100px; /* EXACTLY matches .log-entry */
+    gap: 10px;                             /* Match gap of .log-entry */
+    
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    padding-right: 8px;                    /* VISUAL HACK: Compensate for scrollbar width */
+    border-bottom: 1px solid #1a3a5a;
+    font-weight: bold;
+    color: var(--accent-primary);
+    align-items: center;                   /* Vertically center text */
+}
+
+/* 2. Style the Feed Container */
+.log-container #logFeed {
+    height: calc(100% - 30px);             /* Adjust for header height */
+    overflow-y: auto;                      /* Allow vertical scrolling */
+    overflow-x: hidden;                    /* KILL THE HORIZONTAL SCROLLBAR */
+    padding-right: 0px;                    
+}
+
+/* 3. Dark Scrollbar Styling (Webkit browsers like Chrome/Edge) */
+.log-container #logFeed::-webkit-scrollbar {
+    width: 8px;                            /* Width of vertical bar */
+    height: 8px;                           /* Height of horizontal bar (if it appears) */
+}
+
+.log-container #logFeed::-webkit-scrollbar-track {
+    background: #0a1926;                   /* Dark track background */
+}
+
+.log-container #logFeed::-webkit-scrollbar-thumb {
+    background: #1a3a5a;                   /* Dark blue handle */
+    border-radius: 4px;
+}
+
+.log-container #logFeed::-webkit-scrollbar-thumb:hover {
+    background: #00d4ff;                   /* Glow effect on hover */
+}
+
+/* Ensure entries don't overflow */
+.log-entry {
+    display: grid;
+    grid-template-columns: 80px 100px 1fr 100px;
+    gap: 10px;
+    padding: 4px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    align-items: center;                   /* Vertically center text */
+    font-size: 11px;                       /* Slightly smaller font helps fit text */
+}
+    </style>
+</head>
+
+<body>
+    <div class="dashboard">
+        <header>
+            <div class="logo">CYBER-SENTINEL // FORENSIC NETWORK ANALYZER</div>
+            <div class="status-badge" id="appStatus">SYSTEM IDLE</div>
+        </header>
+
+        <aside class="sidebar">
+            <h3 style="font-size: 14px;">Controls</h3>
+            <button id="toggleScan">Initialize Scan</button>
+            <button id="clearLogs">Purge Logs</button>
+            <button id="simulateAttack">Simulate Attack</button>
+            <button id="toggleNetworkMode" class="network-mode">Network Mode: SIM</button>
+            <button id="generateReport"
+                style="border-color: var(--accent-secondary); color: var(--accent-secondary);">Generate Report</button>
+
+            <div class="mode-indicator" id="modeIndicator">
+                MODE: SIMULATION | TRAFFIC: NORMAL
+            </div>
+
+            <div style="margin-top: auto;">
+                <h4 style="font-size: 10px; margin-bottom: 5px;">Threat Level</h4>
+                <div class="risk-meter">
+                    <div id="globalRisk" class="risk-fill"></div>
+                </div>
+                <div id="riskValue" style="font-size: 12px; margin-top: 5px; text-align: right;">0%</div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total Analyzed</div>
+                    <div id="statTotal" class="stat-value">0</div>
+                </div>
+                <div class="stat-card" style="border-color: var(--danger);">
+                    <div class="stat-label">Anomalies Detected</div>
+                    <div id="statAnomalies" class="stat-value">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Safe Packets</div>
+                    <div id="statSafe" class="stat-value">0</div>
+                </div>
+                <div class="stat-card" style="border-color: var(--accent-primary);">
+                    <div class="stat-label">Uptime</div>
+                    <div id="statUptime" class="stat-value">00:00</div>
+                </div>
+            </div>
+
+            <!-- NEW: Threat Timeline Chart -->
+            <div class="timeline-container">
+                <div class="timeline-header">THREAT TIMELINE // REAL-TIME ANALYSIS</div>
+                <canvas id="threatChart"></canvas>
+            </div>
+
+            <div class="log-container">
+                <div class="scanline"></div>
+                <div class="log-header">
+                    <span>TIME</span>
+                    <span>RESULT</span>
+                    <span>THREAT CATEGORY</span>
+                    <span>RISK</span>
+                </div>
+                <div id="logFeed"></div>
+            </div>
+
+            <div class="threat-summary-container">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <div class="summary-header">THREAT DISTRIBUTION</div>
+        <select id="donutRange" style="
+            background: #0d1e2e;
+            color: #00d4ff;
+            border: 1px solid #1a3a5a;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-family: 'JetBrains Mono', monospace;
+        ">
+            <option value="all">All Packets</option>
+            <option value="200">Last 200</option>
+            <option value="100" selected>Last 100</option>
+            <option value="50">Last 50</option>
+        </select>
+    </div>
+    <div style="position: relative; height: 350px; width: 100%;">
+        <canvas id="threatDonut"></canvas>
+    </div>
+</div>
+        </main>
+    </div>
+
+    <script>
+        let isScanning = false;
+        let scanInterval;
+        let stats = { total: 0, anomalies: 0, safe: 0, startTime: Date.now() };
+        let networkMode = 'simulation';
+        let attackMode = 'normal';
+
+        const toggleBtn = document.getElementById('toggleScan');
+        const logFeed = document.getElementById('logFeed');
+        const statusBadge = document.getElementById('appStatus');
+
+        // ====================
+        // THREAT TIMELINE CHART - NEW
+        // ====================
+        const ctx = document.getElementById('threatChart').getContext('2d');
+        const timelineData = {
+            labels: [],
+            datasets: [{
+                label: 'Risk Score',
+                data: [],
+                borderColor: '#00ff9d',
+                backgroundColor: 'rgba(0, 255, 157, 0.1)',
+                borderWidth: 2,
+                tension: 0.4,
+                fill: true
+            }]
+        };
+
+        const threatChart = new Chart(ctx, {
+            type: 'line',
+            data: timelineData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(10, 25, 38, 0.9)',
+                        titleColor: '#00ff9d',
+                        bodyColor: '#e0f2ff',
+                        borderColor: '#1a3a5a',
+                        borderWidth: 1
+                    }
+                },
+                scales: {
+                    x: {
+                        display: true,
+                        grid: { color: 'rgba(26, 58, 90, 0.3)' },
+                        ticks: { color: '#88a0b0', font: { size: 9 } }
+                    },
+                    y: {
+                        display: true,
+                        min: 0,
+                        max: 100,
+                        grid: { color: 'rgba(26, 58, 90, 0.3)' },
+                        ticks: { color: '#88a0b0', font: { size: 9 } }
+                    }
+                },
+                animation: { duration: 300 }
+            }
+        });
+
+        function updateTimeline(riskScore, timestamp) {
+            timelineData.labels.push(timestamp);
+            timelineData.datasets[0].data.push(riskScore);
+
+            // Keep last 20 data points
+            if (timelineData.labels.length > 20) {
+                timelineData.labels.shift();
+                timelineData.datasets[0].data.shift();
+            }
+
+            // Change color based on threat level
+            const avgRisk = timelineData.datasets[0].data.reduce((a, b) => a + b, 0) / timelineData.datasets[0].data.length;
+            timelineData.datasets[0].borderColor = avgRisk > 50 ? '#ff3e3e' : '#00ff9d';
+            timelineData.datasets[0].backgroundColor = avgRisk > 50 ? 'rgba(255, 62, 62, 0.1)' : 'rgba(0, 255, 157, 0.1)';
+
+            threatChart.update();
+        }
+
+        // ====================
+        // EVENT HANDLERS
+        // ====================
+        toggleBtn.addEventListener('click', () => {
+            isScanning = !isScanning;
+            if (isScanning) {
+                startScanning();
+            } else {
+                stopScanning();
+            }
+        });
+
+        document.getElementById('clearLogs').addEventListener('click', () => {
+            logFeed.innerHTML = '';
+            stats = { ...stats, total: 0, anomalies: 0, safe: 0 };
+            timelineData.labels = [];
+            timelineData.datasets[0].data = [];
+            threatChart.update();
+            updateStats();
+        });
+
+        document.getElementById('simulateAttack').addEventListener('click', async () => {
+            const response = await fetch('/toggle_attack', { method: 'POST' });
+            const data = await response.json();
+            attackMode = data.mode;
+            updateModeIndicator();
+
+            // Visual feedback
+            const btn = document.getElementById('simulateAttack');
+            if (attackMode === 'attack') {
+                btn.classList.add('active');
+                btn.textContent = 'Stop Attack';
+            } else {
+                btn.classList.remove('active');
+                btn.textContent = 'Simulate Attack';
+            }
+        });
+
+        document.getElementById('toggleNetworkMode').addEventListener('click', async () => {
+            const response = await fetch('/toggle_network_mode', { method: 'POST' });
+            const data = await response.json();
+
+            if (data.available) {
+                networkMode = data.mode;
+                const btn = document.getElementById('toggleNetworkMode');
+                if (networkMode === 'live') {
+                    btn.textContent = 'Network Mode: LIVE';
+                    btn.classList.add('active');
+                } else {
+                    btn.textContent = 'Network Mode: SIM';
+                    btn.classList.remove('active');
+                }
+                updateModeIndicator();
+            } else {
+                alert('Live network monitoring unavailable. Install psutil: pip install psutil');
+            }
+        });
+
+        document.getElementById('generateReport').addEventListener('click', async () => {
+            try {
+                const uptime = document.getElementById('statUptime').textContent;
+                const distribution = {};
+        threatHistory.forEach(type => {
+            distribution[type] = (distribution[type] || 0) + 1;
+        });
+                const response = await fetch('/generate_report', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        stats: { ...stats, uptime },
+                        timeline: timelineData.datasets[0].data,
+                        distribution: distribution
+                    })
+                });
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `forensic_report_${new Date().getTime()}.pdf`;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                } else {
+                    alert('Report generation failed');
+                }
+            } catch (err) {
+                console.error('Report error:', err);
+                alert('Error generating report');
+            }
+        });
+
+        function updateModeIndicator() {
+            const indicator = document.getElementById('modeIndicator');
+            indicator.textContent = `MODE: ${networkMode.toUpperCase()} | TRAFFIC: ${attackMode.toUpperCase()}`;
+        }
+
+        function startScanning() {
+            isScanning = true;
+            toggleBtn.textContent = 'Terminate Scan';
+            toggleBtn.classList.add('active');
+            statusBadge.textContent = 'SCANNING ACTIVE';
+            statusBadge.style.borderColor = 'var(--danger)';
+            statusBadge.style.color = 'var(--danger)';
+
+            scanInterval = setInterval(fetchData, 2000);
+        }
+
+        function stopScanning() {
+            isScanning = false;
+            toggleBtn.textContent = 'Initialize Scan';
+            toggleBtn.classList.remove('active');
+            statusBadge.textContent = 'SYSTEM IDLE';
+            statusBadge.style.borderColor = 'var(--accent-primary)';
+            statusBadge.style.color = 'var(--accent-primary)';
+            clearInterval(scanInterval);
+        }
+
+
+        // Keep a history of threat types (rolling window)
+let threatHistory = [];           // array of all threat_types received
+const MAX_HISTORY = 1000;         // safety limit - prevent memory issues
+
+// Donut Chart Setup
+const donutCtx = document.getElementById('threatDonut').getContext('2d');
+const threatDonut = new Chart(donutCtx, {
+    type: 'doughnut',
+    data: {
+        labels: ['None', 'Probe', 'U2R', 'R2L', 'DoS'],
+        datasets: [{
+            data: [0, 0, 0, 0, 0],
+            backgroundColor: [
+                '#2e7d32aa',     // muted green
+                '#ff9800cc',     // orange
+                '#f44336cc',     // red
+                '#d81b60cc',     // magenta
+                '#b71c1ccc'      // dark red
+            ],
+            borderColor: '#0a1926',
+            borderWidth: 1.5
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '62%',
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: { color: '#a0c0ff', font: { size: 10 }, padding: 10 }
+            },
+            tooltip: {
+                backgroundColor: 'rgba(10, 25, 38, 0.94)',
+                titleColor: '#00ff9d',
+                bodyColor: '#e0f2ff',
+                borderColor: '#1a3a5a',
+                borderWidth: 1
+            }
+        },
+        animation: { duration: 800, easing: 'easeOutQuart' }
+    }
+});
+
+// Function to recalculate and update donut based on current range
+function updateThreatDonut() {
+    const range = document.getElementById('donutRange').value;
+    let slice;
+
+    if (range === 'all') {
+        slice = threatHistory;
+    } else {
+        const count = parseInt(range);
+        slice = threatHistory.slice(-count);
+    }
+
+    // Count frequencies
+    const counts = {
+        'None': 0, 'Probe': 0, 'U2R': 0, 'R2L': 0, 'DoS': 0
+    };
+
+    slice.forEach(type => {
+        if (type in counts) counts[type]++;
+        else counts['None']++;   // fallback for unexpected types
+    });
+
+    threatDonut.data.datasets[0].data = [
+        counts['None'], counts['Probe'], counts['U2R'], counts['R2L'], counts['DoS']
+    ];
+
+    threatDonut.update();
+}
+
+//         // Threat Distribution Donut
+// const donutCtx = document.getElementById('threatDonut').getContext('2d');
+
+// const threatDonutData = {
+//     labels: ['None', 'Probe', 'U2R', 'R2L', 'DoS'], // add more categories if needed
+//     datasets: [{
+//         data: [0, 0, 0, 0, 0],
+//         backgroundColor: [
+//             '#2e7d32',           // normal/green
+//             '#ff9800',           // probe/orange
+//             '#f44336',           // u2r/red
+//             '#d81b60',           // r2l/pinkish
+//             '#b71c1c'            // dos/dark red
+//         ],
+//         borderColor: 'rgba(5, 10, 15, 0.9)',
+//         borderWidth: 1
+//     }]
+// };
+
+// const threatDonut = new Chart(donutCtx, {
+//     type: 'doughnut',
+//     data: threatDonutData,
+//     options: {
+//         responsive: true,
+//         maintainAspectRatio: false,
+//         cutout: '65%',
+//         plugins: {
+//             legend: {
+//                 position: 'bottom',
+//                 labels: {
+//                     color: '#88a0b0',
+//                     font: { size: 10 },
+//                     padding: 12
+//                 }
+//             },
+//             tooltip: {
+//                 backgroundColor: 'rgba(10, 25, 38, 0.92)',
+//                 titleColor: '#00ff9d',
+//                 bodyColor: '#e0f2ff',
+//                 borderColor: '#1a3a5a',
+//                 borderWidth: 1
+//             }
+//         }
+//     }
+// });
+
+// // Simple counter object
+// let threatCounts = {
+//     'None': 0,
+//     'Probe': 0,
+//     'U2R': 0,
+//     'R2L': 0,
+//     'DoS': 0
+//     // add more if your backend returns other categories
+// };
+
+// // Update function - call this in processEntry()
+// function updateThreatDonut(threatType) {
+//     if (threatType in threatCounts) {
+//         threatCounts[threatType]++;
+//     } else {
+//         threatCounts['None']++; // fallback
+//     }
+
+//     // Update chart data (last 100 would need a queue, here we just accumulate)
+//     threatDonutData.datasets[0].data = [
+//         threatCounts['None'],
+//         threatCounts['Probe'],
+//         threatCounts['U2R'],
+//         threatCounts['R2L'],
+//         threatCounts['DoS']
+//     ];
+
+//     threatDonut.update();
+// }
+
+document.getElementById('donutRange').addEventListener('change', updateThreatDonut);
+
+        async function fetchData() {
+            try {
+                const response = await fetch('/simulate?batch=3');
+                const data = await response.json();
+
+                if (data.error) {
+                    console.error('API Error:', data.error);
+                    return;
+                }
+
+                data.forEach(entry => processEntry(entry));
+            } catch (err) {
+                console.error('Fetch error:', err);
+            }
+        }
+
+        function processEntry(entry) {
+            stats.total++;
+            if (entry.prediction === 'Anomaly') {
+                stats.anomalies++;
+            } else {
+                stats.safe++;
+            }
+
+            const div = document.createElement('div');
+            div.className = `log-entry ${entry.prediction.toLowerCase()}`;
+            div.innerHTML = `
+                <span>${entry.timestamp}</span>
+                <span>${entry.prediction.toUpperCase()}</span>
+                <span>${entry.threat_type}</span>
+                <span>${entry.risk_score}%</span>
+            `;
+
+            logFeed.insertBefore(div, logFeed.firstChild);
+            if (logFeed.children.length > 50) logFeed.lastChild.remove();
+
+            updateStats(entry.risk_score);
+            updateTimeline(entry.risk_score, entry.timestamp);
+            // updateThreatDonut(entry.threat_type || 'None');
+
+            // Store threat type in history
+    const threatType = entry.threat_type || 'None';
+    threatHistory.push(threatType);
+
+    // Optional: keep history bounded
+    if (threatHistory.length > MAX_HISTORY) {
+        threatHistory.shift();
+    }
+
+    // Update donut
+    updateThreatDonut();
+        }
+
+        function updateStats(lastRisk = 0) {
+            document.getElementById('statTotal').textContent = stats.total;
+            document.getElementById('statAnomalies').textContent = stats.anomalies;
+            document.getElementById('statSafe').textContent = stats.safe;
+
+            const riskFill = document.getElementById('globalRisk');
+            const riskVal = document.getElementById('riskValue');
+
+            riskFill.style.width = lastRisk + '%';
+            riskFill.style.backgroundColor = lastRisk > 50 ? 'var(--danger)' : 'var(--accent-primary)';
+            riskVal.textContent = lastRisk + '%';
+
+            // Uptime calc
+            const diff = Math.floor((Date.now() - stats.startTime) / 1000);
+            const m = Math.floor(diff / 60).toString().padStart(2, '0');
+            const s = (diff % 60).toString().padStart(2, '0');
+            document.getElementById('statUptime').textContent = `${m}:${s}`;
+        }
+
+        // Check system capabilities on load
+        fetch('/get_system_info')
+            .then(r => r.json())
+            .then(data => {
+                if (!data.psutil_available) {
+                    document.getElementById('toggleNetworkMode').disabled = true;
+                    document.getElementById('toggleNetworkMode').style.opacity = '0.5';
+                }
+            });
+    </script>
+</body>
+
+</html>

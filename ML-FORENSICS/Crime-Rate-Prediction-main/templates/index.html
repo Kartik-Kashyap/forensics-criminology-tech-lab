@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forensic Intelligence | Crime Rate Predictor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <meta name="description"
+        content="Advanced Crime Rate Prediction Dashboard for Forensic Analysis. Developed by Kartik Kashyap.">
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon.png') }}">
+</head>
+
+<body>
+    <div class="scanlines"></div>
+    <div class="grid-overlay"></div>
+
+    <div id="loading-overlay" class="hidden">
+        <div class="loader-content">
+            <div class="terminal-loader">
+                <p>> INITIALIZING FORENSIC SCAN...</p>
+                <p>> ACCESSING NCRB DATABASE [OK]</p>
+                <p>> RUNNING RANDOM FOREST REGRESSION...</p>
+                <p>> CALCULATING DEMOGRAPHIC OFFSETS...</p>
+                <div class="progress-bar-container">
+                    <div class="progress-bar"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <header>
+        <div class="logo-container">
+            <span class="logo-icon"><i class="fas fa-microscope"></i></span>
+            <div class="logo-text">
+                <h1>CRIME ANALYSIS UNIT</h1>
+                <p>FORENSIC DATA SCIENCE DIVISION</p>
+            </div>
+        </div>
+        <nav>
+            <div class="status-indicator">
+                <span class="dot pulse"></span>
+                <span class="status-text">SYSTEM ONLINE</span>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="hero-content">
+                <h2 class="glitch" data-text="PREDICTIVE INTELLIGENCE">PREDICTIVE INTELLIGENCE</h2>
+                <p class="subtitle">Utilizing Random Forest Regression for Urban Crime Analytics</p>
+            </div>
+        </section>
+
+        <section class="analysis-form-container">
+            <div class="terminal-header">
+                <span class="dot red"></span>
+                <span class="dot yellow"></span>
+                <span class="dot green"></span>
+                <span class="terminal-title">QUERY_ENGINE.EXE</span>
+            </div>
+            <form action="/predict" method="POST" class="analysis-form">
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label for="city"><i class="fas fa-city"></i> TARGET JURISDICTION</label>
+                        <select name="city" id="city" required>
+                            <option value="" disabled selected>Select City</option>
+                            <option value="0">Ahmedabad</option>
+                            <option value="1">Bengaluru</option>
+                            <option value="2">Chennai</option>
+                            <option value="3">Coimbatore</option>
+                            <option value="4">Delhi</option>
+                            <option value="5">Ghaziabad</option>
+                            <option value="6">Hyderabad</option>
+                            <option value="7">Indore</option>
+                            <option value="8">Jaipur</option>
+                            <option value="9">Kanpur</option>
+                            <option value="10">Kochi</option>
+                            <option value="11">Kolkata</option>
+                            <option value="12">Kozhikode</option>
+                            <option value="13">Lucknow</option>
+                            <option value="14">Mumbai</option>
+                            <option value="15">Nagpur</option>
+                            <option value="16">Patna</option>
+                            <option value="17">Pune</option>
+                            <option value="18">Surat</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="crime"><i class="fas fa-fingerprint"></i> CRIME CLASSIFICATION</label>
+                        <select name="crime" id="crime" required>
+                            <option value="" disabled selected>Select Classification</option>
+                            <option value="0">Juvenile Crimes</option>
+                            <option value="1">Crimes against SC</option>
+                            <option value="2">Crimes against ST</option>
+                            <option value="3">Crimes against Senior Citizens</option>
+                            <option value="4">Crimes against Children</option>
+                            <option value="5">Crimes against Women</option>
+                            <option value="6">Cyber Crimes</option>
+                            <option value="7">Economic Offences</option>
+                            <option value="8">Kidnapping</option>
+                            <option value="9">Murder</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="year-dropdown"><i class="fas fa-calendar-alt"></i> TEMPORAL HORIZON</label>
+                        <select name="year" id="year-dropdown" required>
+                            <!-- Populated by JS -->
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="analyze-btn" id="submit-btn">
+                        <span class="btn-text">INITIALIZE ANALYSIS</span>
+                        <span class="btn-icon"><i class="fas fa-search-location"></i></span>
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <section class="capabilities">
+            <div class="capability-card">
+                <i class="fas fa-brain"></i>
+                <h3>Neural Modeling</h3>
+                <p>93.2% Model Accuracy utilizing ensemble learning techniques.</p>
+            </div>
+            <div class="capability-card">
+                <i class="fas fa-database"></i>
+                <h3>NCRB Integrated</h3>
+                <p>Synchronized with National Crime Records Bureau historical indices.</p>
+            </div>
+            <div class="capability-card">
+                <i class="fas fa-chart-line"></i>
+                <h3>Growth Adjusted</h3>
+                <p>Real-time population CAGR projections (1.0% annual offset).</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-info">
+                <p>&copy; 2026 Kartik Kashyap | Forensic Intelligence Suite</p>
+                <div class="footer-links">
+                    <a href="https://github.com/Kartik-Kashyap" target="_blank"><i class="fab fa-github"></i>
+                        GitHub</a>
+                    <a href="https://www.linkedin.com/in/kartik-kashyap-68ab6924b/" target="_blank"><i class="fab fa-linkedin"></i>
+                        LinkedIn</a>
+                </div>
+            </div>
+            <div class="footer-dev-note">
+                <p>Designed for Advanced Forensic Research</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
+</body>
+
+</html>

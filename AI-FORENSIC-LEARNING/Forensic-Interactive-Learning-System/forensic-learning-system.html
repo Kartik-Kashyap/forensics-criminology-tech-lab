@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forensic Learning System - Interactive AI-Powered Education</title>
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1>🔬 Forensic Learning System</h1>
+                <p class="tagline">AI-Powered Interactive Forensic Education</p>
+                <div class="connection-status">
+                    <span id="llm-status" class="status-indicator offline">LLM: Disconnected</span>
+                    <button id="connect-llm" class="btn-small">Connect to Ollama</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Layout -->
+        <div class="main-layout">
+            <!-- Sidebar Navigation -->
+            <aside class="sidebar">
+                <nav class="navigation">
+                    <h3>Learning Modes</h3>
+                    <ul class="nav-list">
+                        <li><a href="#" data-mode="concepts" class="nav-link active">📚 Concept Explorer</a></li>
+                        <li><a href="#" data-mode="cases" class="nav-link">🔍 Case Studies</a></li>
+                        <li><a href="#" data-mode="quiz" class="nav-link">✅ Knowledge Test</a></li>
+                        <li><a href="#" data-mode="simulation" class="nav-link">⚖️ Case Simulation</a></li>
+                        <li><a href="#" data-mode="socratic" class="nav-link">💭 Socratic Dialogue</a></li>
+                    </ul>
+
+                    <h3>Curriculum</h3>
+                    <div class="curriculum-tree" id="curriculum-tree"></div>
+
+                    <h3>External Resources</h3>
+                    <ul class="nav-list">
+                        <li><a href="#" id="wiki-search" class="nav-link">🌐 Wikipedia Search</a></li>
+                    </ul>
+
+                    <h3>AI Personas</h3>
+                    <div class="persona-selector">
+                        <label>
+                            <input type="radio" name="persona" value="tutor" checked>
+                            <span class="persona-card">
+                                <strong>Dr. Morgan</strong>
+                                <small>Patient Tutor</small>
+                            </span>
+                        </label>
+                        <label>
+                            <input type="radio" name="persona" value="examiner">
+                            <span class="persona-card">
+                                <strong>Prof. Hayes</strong>
+                                <small>Critical Examiner</small>
+                            </span>
+                        </label>
+                        <label>
+                            <input type="radio" name="persona" value="narrator">
+                            <span class="persona-card">
+                                <strong>Det. Rivera</strong>
+                                <small>Case Narrator</small>
+                            </span>
+                        </label>
+                    </div>
+                </nav>
+            </aside>
+
+            <!-- Main Content Area -->
+            <main class="content">
+                <!-- Mode: Concept Explorer -->
+                <section id="mode-concepts" class="mode-section active">
+                    <div class="mode-header">
+                        <h2>Forensic Concept Explorer</h2>
+                        <p>Learn forensic principles through interactive case-based examples</p>
+                    </div>
+
+                    <div class="concept-selector">
+                        <label for="concept-dropdown">Select a Concept:</label>
+                        <select id="concept-dropdown" class="form-select">
+                            <option value="">-- Choose a forensic concept --</option>
+                        </select>
+                    </div>
+
+                    <div id="concept-content" class="concept-display">
+                        <div class="welcome-message">
+                            <h3>Welcome to the Forensic Learning System</h3>
+                            <p>This interactive platform uses AI to help you understand forensic science through:</p>
+                            <ul>
+                                <li><strong>Case-Based Learning:</strong> Real-world scenarios instead of abstract
+                                    definitions</li>
+                                <li><strong>Socratic Questioning:</strong> Guided discovery through thoughtful questions
+                                </li>
+                                <li><strong>Adaptive Explanations:</strong> Content that adjusts to your level</li>
+                                <li><strong>Ethical Framework:</strong> Understanding the responsibilities of forensic
+                                    practice</li>
+                            </ul>
+                            <p class="highlight">Select a concept from the dropdown above to begin your learning
+                                journey.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Mode: Case Studies -->
+                <section id="mode-cases" class="mode-section">
+                    <div class="mode-header">
+                        <h2>Interactive Case Studies</h2>
+                        <p>Apply forensic concepts to realistic scenarios</p>
+                    </div>
+
+                    <div id="case-content">
+                        <div class="case-list" id="case-list"></div>
+                        <div id="active-case" class="case-workspace"></div>
+                    </div>
+                </section>
+
+                <!-- Mode: Knowledge Test -->
+                <section id="mode-quiz" class="mode-section">
+                    <div class="mode-header">
+                        <h2>Knowledge Assessment</h2>
+                        <p>Test your understanding with AI-generated questions</p>
+                    </div>
+
+                    <div class="quiz-config">
+                        <div class="topic-selector-group"
+                            style="margin-bottom: 1.5rem; display: flex; flex-direction: column; gap: 10px;">
+                            <label>
+                                <strong>Select or Type a Topic:</strong>
+                                <div style="display: flex; gap: 10px; margin-top: 5px;">
+                                    <select id="quiz-topic-dropdown" class="form-select" style="flex: 1;">
+                                        <option value="">-- Choose from Lessons --</option>
+                                    </select>
+
+                                    <span style="align-self: center;">OR</span>
+
+                                    <input type="text" id="quiz-topic-manual" class="form-input"
+                                        placeholder="e.g., Blood Spatter Analysis" style="flex: 1;">
+                                </div>
+                            </label>
+                        </div>
+
+                        <div style="display: flex; gap: 20px; align-items: flex-end;">
+                            <label>
+                                Difficulty:
+                                <select id="quiz-difficulty" class="form-select">
+                                    <option value="beginner">Beginner</option>
+                                    <option value="intermediate" selected>Intermediate</option>
+                                    <option value="advanced">Advanced</option>
+                                </select>
+                            </label>
+                            <label>
+                                Questions:
+                                <input type="number" id="quiz-count" min="3" max="15" value="5" class="form-input">
+                            </label>
+                            <button id="generate-quiz" class="btn-primary" onclick="app.generateQuiz()">Generate
+                                Quiz</button>
+                        </div>
+                    </div>
+
+                    <div id="quiz-content" class="quiz-workspace"></div>
+                    <div class="history-section" style="margin-top: 3rem;">
+    <h3>Recent Quiz History</h3>
+    <div id="quiz-history-list" class="concept-card">
+        <p>No quizzes taken yet.</p>
+    </div>
+</div>
+                </section>
+
+                <!-- Mode: Case Simulation -->
+                <section id="mode-simulation" class="mode-section">
+                    <div class="mode-header">
+                        <h2>Forensic Case Simulation</h2>
+                        <p>Step into the role of a forensic investigator</p>
+                    </div>
+
+                    <div id="simulation-content">
+                        <div class="simulation-start">
+                            <h3>Available Simulations</h3>
+                            <div id="simulation-list" class="simulation-grid"></div>
+                        </div>
+                        <div id="active-simulation" class="simulation-workspace"></div>
+                    </div>
+                </section>
+
+                <!-- Mode: Socratic Dialogue -->
+                <section id="mode-socratic" class="mode-section">
+                    <div class="mode-header">
+                        <h2>Socratic Dialogue</h2>
+                        <p>Explore concepts through guided questioning</p>
+                    </div>
+
+                    <div class="socratic-workspace">
+                        <div id="socratic-chat" class="chat-container"></div>
+                        <div class="chat-input-area">
+                            <input type="text" id="socratic-input" class="chat-input"
+                                placeholder="Type your response...">
+                            <button id="socratic-send" class="btn-primary">Send</button>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+
+        <!-- Wikipedia Search Modal -->
+        <div id="wiki-modal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Wikipedia Forensic Search</h2>
+                <div class="search-box">
+                    <input type="text" id="wiki-input" class="form-input"
+                        placeholder="Search forensic topics on Wikipedia...">
+                    <button id="wiki-search-btn" class="btn-primary">Search</button>
+                </div>
+                <p class="info-text">This will open Wikipedia in a new tab with your search query.</p>
+            </div>
+        </div>
+
+        <!-- Settings Panel -->
+        <div class="settings-panel" id="settings-panel">
+            <button class="settings-toggle" id="settings-toggle">⚙️</button>
+            <div class="settings-content">
+                <h3>Ollama Configuration</h3>
+                <label>
+                    Ollama URL:
+                    <input type="text" id="ollama-url" class="form-input" value="http://localhost:11434"
+                        placeholder="http://localhost:11434">
+                </label>
+                <label>
+                    Model:
+                    <input type="text" id="ollama-model" class="form-input" value="llama3.2" placeholder="llama3.2">
+                </label>
+                <label>
+                    Temperature:
+                    <input type="range" id="temperature" min="0" max="1" step="0.1" value="0.7">
+                    <span id="temp-value">0.7</span>
+                </label>
+                <button id="save-settings" class="btn-primary">Save Settings</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="forensic-knowledge.js"></script>
+    <script src="ai-personas.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>

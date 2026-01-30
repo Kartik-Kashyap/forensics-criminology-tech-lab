@@ -1,0 +1,1740 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Criminology Scenario Simulator</title>
+    <link rel="icon" type="image/png" href="android-chrome-512x512.png">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔮</text></svg>">
+
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // Icon components (simplified versions)
+        const Icon = ({ name, size = 20, className = "" }) => {
+            const icons = {
+                AlertCircle: <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>,
+                MapPin: <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>,
+                Shield: <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>,
+                Activity: <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" /></svg>,
+                Sun: <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="5" /><line x1="12" y1="1" x2="12" y2="3" /><line x1="12" y1="21" x2="12" y2="23" /><line x1="4.22" y1="4.22" x2="5.64" y2="5.64" /><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" /><line x1="1" y1="12" x2="3" y2="12" /><line x1="21" y1="12" x2="23" y2="12" /><line x1="4.22" y1="19.78" x2="5.64" y2="18.36" /><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" /></svg>,
+                Moon: <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" /></svg>,
+                Users: <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>,
+                Lightbulb: <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="9" y1="18" x2="15" y2="18" /><line x1="10" y1="22" x2="14" y2="22" /><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14" /></svg>,
+                Beer: <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 11h1a3 3 0 0 1 0 6h-1" /><path d="M9 12v6" /><path d="M13 12v6" /><path d="M14 7.5c-1 0-1.44.5-3 .5s-2-.5-3-.5-1.72.5-2.5.5a2.5 2.5 0 0 1 0-5c.78 0 1.5.5 2.5.5S9.44 2 11 2s2 1.5 3 1.5 1.72-.5 2.5-.5a2.5 2.5 0 0 1 0 5c-.78 0-1.5-.5-2.5-.5z" /><path d="M5 8v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8" /></svg>,
+                Calendar: <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg>,
+                Brain: <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z" /><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z" /></svg>,
+                TrendingUp: <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18" /><polyline points="17 6 23 6 23 12" /></svg>,
+            };
+            return icons[name] || null;
+        };
+
+        // Ollama API integration
+        const useOllamaInsights = () => {
+            const [isConnected, setIsConnected] = useState(false);
+            const [isLoading, setIsLoading] = useState(false);
+
+            useEffect(() => {
+                checkOllamaConnection();
+            }, []);
+
+            const checkOllamaConnection = async () => {
+                try {
+                    const response = await fetch('http://localhost:11434/api/tags');
+                    setIsConnected(response.ok);
+                } catch (error) {
+                    setIsConnected(false);
+                }
+            };
+
+            const getInsights = async (prompt) => {
+                if (!isConnected) {
+                    return "Ollama is not connected. Please ensure Ollama is running on localhost:11434";
+                }
+
+                setIsLoading(true);
+                try {
+                    const response = await fetch('http://localhost:11434/api/generate', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            model: 'llama3.2',
+                            prompt: prompt,
+                            stream: false,
+                            options: {
+                                temperature: 0.7,
+                                top_p: 0.9,
+                            }
+                        })
+                    });
+
+                    const data = await response.json();
+                    setIsLoading(false);
+                    return data.response;
+                } catch (error) {
+                    setIsLoading(false);
+                    return `Error connecting to Ollama: ${error.message}`;
+                }
+            };
+
+            return { isConnected, isLoading, getInsights, checkOllamaConnection };
+        };
+
+        // Advanced risk calculation with machine learning-inspired scoring
+        const calculateAdvancedRiskScore = (factors) => {
+            const weights = {
+                time: { 'morning': 0.3, 'afternoon': 0.4, 'evening': 0.7, 'late-night': 1.0, 'night': 0.9 },
+                crowd: { 'low': 0.8, 'medium': 0.4, 'high': 0.7 },
+                lighting: { 'excellent': 0.1, 'adequate': 0.4, 'minimal': 0.7, 'poor': 1.0 },
+                alcohol: { 'none': 0.0, 'single': 0.6, 'multiple': 1.0 },
+                events: { 'none': 0.0, 'minor': 0.4, 'major': 0.7 },
+                visibility: { 'high': 0.2, 'medium': 0.5, 'low': 0.9 },
+                escape: { 'multiple': 0.7, 'single': 0.4, 'none': 0.2 }
+            };
+
+            const timeScore = (weights.time[factors.timeOfDay] || 0.5) * 25;
+            const crowdScore = (weights.crowd[factors.crowdDensity] || 0.5) * 20;
+            const lightScore = (weights.lighting[factors.lighting] || 0.5) * 25;
+            const alcoholScore = (weights.alcohol[factors.alcoholZones] || 0) * 20;
+            const eventScore = (weights.events[factors.events] || 0) * 10;
+
+            // Interaction effects (compound risks)
+            let interactionBonus = 0;
+            if (factors.timeOfDay === 'late-night' && factors.lighting === 'poor') {
+                interactionBonus += 15; // Dark + late night is particularly risky
+            }
+            if (factors.alcoholZones === 'multiple' && factors.crowdDensity === 'high') {
+                interactionBonus += 10; // Crowds + alcohol increase conflict
+            }
+            if (factors.crowdDensity === 'low' && factors.lighting === 'poor') {
+                interactionBonus += 12; // Isolation + darkness
+            }
+
+            const baseScore = timeScore + crowdScore + lightScore + alcoholScore + eventScore;
+            const totalScore = Math.min(100, baseScore + interactionBonus);
+
+            return {
+                totalScore: Math.round(totalScore),
+                breakdown: {
+                    temporal: Math.round(timeScore),
+                    environmental: Math.round(lightScore),
+                    social: Math.round(crowdScore + eventScore),
+                    substance: Math.round(alcoholScore),
+                    interaction: Math.round(interactionBonus)
+                }
+            };
+        };
+
+        // Main App Component
+        const CrimeSimulatorSuite = () => {
+            const [activeTab, setActiveTab] = useState('risk');
+            const { isConnected, isLoading, getInsights, checkOllamaConnection } = useOllamaInsights();
+
+            return (
+                // <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 p-6">
+                <div className="min-h-screen forensic-bg p-6 text-slate-200">
+                    <div className="max-w-7xl mx-auto">
+                        {/* Header */}
+                        <div className="text-left mb-12 border-b-2 border-cyan-900 pb-4 flex justify-between items-end">
+                            <div>
+                                <h1 className="text-5xl font-black text-white mb-2 uppercase tracking-tighter glitch">
+                                    CRIM-OS <span className="text-cyan-500 font-light">v1.2</span>
+                                </h1>
+                                <p className="text-cyan-700 font-bold flex items-center gap-2">
+                                    <span className="pulse-animation w-2 h-2 bg-red-600"></span>
+                                    LIVE SCENARIO ANALYSIS // ENCRYPTED CONNECTION
+                                </p>
+                            </div>
+                            <div className="text-right text-xs text-cyan-900 hidden md:block">
+                                DATELINE: {new Date().toISOString()}<br />
+                                LOCATION: 27.7172° N, 85.3240° E<br />
+                                STATUS: MONITORING ACTIVE
+                            </div>
+                        </div>
+                        <div className="text-left mb-8">
+                            <h1 className="text-4xl font-bold text-white mb-2">Advanced Criminology Scenario Simulator</h1>
+                            <p className="text-cyan-600 tracking-widest uppercase">Evidence-based tools for training, planning, and analysis</p>
+
+                            {/* Ollama Status */}
+                            {/* Ollama Status - Redesigned as a "System Module" */}
+                            <div className="mt-6 md:mt-0 flex flex-col items-end font-mono">
+                                <div className={`flex items-center gap-3 px-3 py-1 border ${isConnected ? 'border-cyan-500/30 bg-cyan-500/5' : 'border-red-500/30 bg-red-500/5'}`}>
+                                    <div className="flex flex-col text-[10px] uppercase">
+                                        <span className="text-slate-500">Neural Link</span>
+                                        <span className={isConnected ? 'text-cyan-400' : 'text-red-500'}>
+                                            {isConnected ? 'Llama 3.2 Active' : 'Link Offline'}
+                                        </span>
+                                    </div>
+                                    <div className={`w-2 h-8 ${isConnected ? 'bg-cyan-500' : 'bg-red-600'} ${isConnected ? 'pulse-animation' : ''}`}></div>
+                                </div>
+                                {!isConnected && (
+                                    <button
+                                        onClick={checkOllamaConnection}
+                                        className="mt-1 text-[10px] text-cyan-600 hover:text-cyan-400 uppercase tracking-widest underline decoration-dotted"
+                                    >
+                                        [ Re-Establish Link ]
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Tab Navigation */}
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-8">
+                            {[
+                                { id: 'risk', label: 'Risk Scenario', icon: 'AlertCircle', code: '01' },
+                                { id: 'hotspot', label: 'Hotspot Analysis', icon: 'Activity', code: '02' },
+                                { id: 'vulnerability', label: 'Vulnerability', icon: 'Shield', code: '03' },
+                                { id: 'predictive', label: 'Predictive Log', icon: 'TrendingUp', code: '04' }
+                            ].map((tab) => (
+                                <button
+                                    key={tab.id}
+                                    onClick={() => setActiveTab(tab.id)}
+                                    className={`group relative flex flex-col items-start p-3 transition-all border ${activeTab === tab.id
+                                            ? 'bg-cyan-500/10 border-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.1)]'
+                                            : 'bg-transparent border-neutral-800 hover:border-neutral-600'
+                                        }`}
+                                >
+                                    {/* Corner Accents for Active Tab */}
+                                    {activeTab === tab.id && (
+                                        <>
+                                            <div className="absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2 border-cyan-400"></div>
+                                            <div className="absolute bottom-0 right-0 w-2 h-2 border-b-2 border-r-2 border-cyan-400"></div>
+                                        </>
+                                    )}
+
+                                    <div className="flex justify-between w-full mb-2">
+                                        <span className={`text-[10px] font-mono ${activeTab === tab.id ? 'text-cyan-400' : 'text-neutral-600'}`}>
+                                            MOD_{tab.code}
+                                        </span>
+                                        <Icon
+                                            name={tab.icon}
+                                            size={16}
+                                            className={activeTab === tab.id ? 'text-cyan-400' : 'text-neutral-500'}
+                                        />
+                                    </div>
+
+                                    <span className={`text-xs font-bold uppercase tracking-tighter ${activeTab === tab.id ? 'text-white' : 'text-neutral-500'
+                                        }`}>
+                                        {tab.label}
+                                    </span>
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* Simulator Content Module */}
+<div className="relative group">
+    {/* Decorative Bracket Accents */}
+    <div className="absolute -top-2 -left-2 w-8 h-8 border-t-2 border-l-2 border-cyan-500 z-20"></div>
+    <div className="absolute -bottom-2 -right-2 w-8 h-8 border-b-2 border-r-2 border-cyan-500 z-20"></div>
+
+    <div className="tactical-panel bg-neutral-900/80 border border-cyan-900/50 p-1 md:p-8 backdrop-blur-md relative overflow-hidden">
+        {/* Top Data Strip */}
+        <div className="flex justify-between items-center mb-6 px-4 py-1 bg-cyan-500/5 border-b border-cyan-900/30 text-[10px] font-mono tracking-widest text-cyan-700">
+            <span>FILE_TYPE: DYNAMIC_SIMULATION</span>
+            <span className="hidden md:block">ENCRYPTION: AES-256-BIT</span>
+            <span>SYSTEM_READY &gt;_</span>
+        </div>
+
+        {/* The Actual Simulator Components */}
+        <div className="relative z-10">
+            {activeTab === 'risk' && <RiskScenarioSimulator getInsights={getInsights} isLoading={isLoading} isConnected={isConnected} />}
+            {activeTab === 'hotspot' && <HotspotSimulator getInsights={getInsights} isLoading={isLoading} isConnected={isConnected} />}
+            {activeTab === 'vulnerability' && <VulnerabilitySimulator getInsights={getInsights} isLoading={isLoading} isConnected={isConnected} />}
+            {activeTab === 'predictive' && <PredictiveModelingSimulator getInsights={getInsights} isLoading={isLoading} isConnected={isConnected} />}
+        </div>
+
+        {/* Visual Scanline Overlay (Local to the panel) */}
+        <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.05)_50%),linear-gradient(90deg,rgba(255,0,0,0.01),rgba(0,255,0,0.01),rgba(0,0,255,0.01))] bg-[length:100%_2px,3px_100%]"></div>
+    </div>
+    
+    {/* Bottom Forensic Meta-Data */}
+    <div className="mt-4 flex justify-between font-mono text-[9px] text-cyan-900 uppercase">
+        <div className="flex gap-4">
+            <span>Buffer_0x882</span>
+            <span>Checksum_OK</span>
+        </div>
+        <div className="animate-pulse">
+            SENSORS_STABLE // NO_REDACTION_REQUIRED
+        </div>
+    </div>
+</div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Risk Scenario Simulator with AI Insights
+        const RiskScenarioSimulator = ({ getInsights, isLoading, isConnected }) => {
+            const [timeOfDay, setTimeOfDay] = useState('evening');
+            const [crowdDensity, setCrowdDensity] = useState('medium');
+            const [lighting, setLighting] = useState('adequate');
+            const [alcoholZones, setAlcoholZones] = useState('none');
+            const [events, setEvents] = useState('none');
+            const [visibility, setVisibility] = useState('medium');
+            const [escapeRoutes, setEscapeRoutes] = useState('single');
+            const [result, setResult] = useState(null);
+            const [aiInsight, setAiInsight] = useState('');
+            const [loadingInsight, setLoadingInsight] = useState(false);
+
+            const analyzeRisk = async () => {
+                const factors = { timeOfDay, crowdDensity, lighting, alcoholZones, events, visibility, escapeRoutes };
+                const scoreData = calculateAdvancedRiskScore(factors);
+
+                let riskFactors = [];
+
+                // Enhanced factor analysis
+                const timeFactors = {
+                    'late-night': 'Peak vulnerability window (11pm-4am): reduced formal surveillance, increased substance use, impaired judgment',
+                    'evening': 'Transition period with mixed activity: routine convergence of motivated offenders and suitable targets',
+                    'night': 'Pre-dawn hours: minimal guardianship, fatigue-related vulnerability',
+                    'morning': 'Commuter peak: routine activities, moderate natural surveillance',
+                    'afternoon': 'Business hours: high legitimate activity, strong natural surveillance'
+                };
+
+                if (timeFactors[timeOfDay]) {
+                    riskFactors.push(timeFactors[timeOfDay]);
+                }
+
+                if (crowdDensity === 'low') {
+                    riskFactors.push('Sparse population: limited capable guardianship, reduced intervention likelihood (Routine Activity Theory)');
+                } else if (crowdDensity === 'high') {
+                    riskFactors.push('Dense crowds: diffusion of responsibility, anonymity effect, increased target pool');
+                } else {
+                    riskFactors.push('Moderate density: balanced surveillance with manageable crowd dynamics');
+                }
+
+                const lightingFactors = {
+                    'poor': 'Critical lighting deficit: concealment opportunities, reduced perceived apprehension risk (CPTED violation)',
+                    'minimal': 'Suboptimal visibility: shadow zones compromise natural surveillance',
+                    'adequate': 'Standard lighting: basic visibility maintained',
+                    'excellent': 'Enhanced illumination: strong deterrent effect, improved detection probability'
+                };
+
+                if (lightingFactors[lighting]) {
+                    riskFactors.push(lightingFactors[lighting]);
+                }
+
+                if (alcoholZones === 'multiple') {
+                    riskFactors.push('High alcohol outlet density: documented correlation with assaultive behavior, impaired decision-making, conflict escalation');
+                } else if (alcoholZones === 'single') {
+                    riskFactors.push('Alcohol availability: potential for disinhibition, emotional dysregulation');
+                }
+
+                if (events === 'major') {
+                    riskFactors.push('Large-scale event: resource strain on guardianship, temporal concentration of activity');
+                } else if (events === 'minor') {
+                    riskFactors.push('Local event: modest increase in activity convergence');
+                }
+
+                if (visibility === 'low') {
+                    riskFactors.push('Restricted sightlines: architectural or environmental barriers limit surveillance');
+                } else if (visibility === 'high') {
+                    riskFactors.push('Open visibility: enhanced natural surveillance capability');
+                }
+
+                if (escapeRoutes === 'multiple') {
+                    riskFactors.push('Multiple exit points: increased offender mobility, reduced territorial control');
+                } else if (escapeRoutes === 'none') {
+                    riskFactors.push('Restricted egress: potential entrapment risk for victims, controlled access');
+                }
+
+                let riskLevel, riskColor, theory;
+                if (scoreData.totalScore <= 30) {
+                    riskLevel = 'LOW RISK';
+                    riskColor = 'text-green-400';
+                    theory = 'Protective factors dominate: strong guardianship, environmental design supports natural surveillance, minimal criminogenic conditions.';
+                } else if (scoreData.totalScore <= 60) {
+                    riskLevel = 'MODERATE RISK';
+                    riskColor = 'text-yellow-400';
+                    theory = 'Mixed environmental profile: some protective factors offset by concerning conditions. Targeted interventions recommended.';
+                } else {
+                    riskLevel = 'ELEVATED RISK';
+                    riskColor = 'text-red-400';
+                    theory = 'Multiple criminogenic factors converge: critical need for environmental modifications, enhanced guardianship, and comprehensive risk mitigation.';
+                }
+
+                setResult({ riskLevel, riskColor, factors: riskFactors, theory, scoreData });
+            };
+
+            const getAIInsights = async () => {
+                if (!result || !isConnected) return;
+
+                setLoadingInsight(true);
+                const prompt = `As a criminology expert, analyze this crime risk scenario:
+
+Risk Level: ${result.riskLevel}
+Risk Score: ${result.scoreData.totalScore}/100
+
+Scenario Factors:
+- Time: ${timeOfDay}
+- Crowd Density: ${crowdDensity}
+- Lighting: ${lighting}
+- Alcohol Outlets: ${alcoholZones}
+- Events: ${events}
+- Visibility: ${visibility}
+- Escape Routes: ${escapeRoutes}
+
+Score Breakdown:
+- Temporal Risk: ${result.scoreData.breakdown.temporal}
+- Environmental Risk: ${result.scoreData.breakdown.environmental}
+- Social Risk: ${result.scoreData.breakdown.social}
+- Substance Risk: ${result.scoreData.breakdown.substance}
+- Interaction Effects: ${result.scoreData.breakdown.interaction}
+
+Provide:
+1. A brief analysis of the most critical risk factors
+2. 3 specific, actionable recommendations for risk mitigation
+3. Which criminological theory best explains this scenario
+
+Keep response under 200 words, focus on practical insights.`;
+
+                const insight = await getInsights(prompt);
+                setAiInsight(insight);
+                setLoadingInsight(false);
+            };
+
+            return (
+                <div className="space-y-6">
+                    <h2 className="text-2xl font-bold text-white mb-4">Advanced Crime Risk Scenario Simulator</h2>
+                    <p className="text-slate-300 mb-6">
+                        Multi-factor risk assessment using evidence-based criminological frameworks.
+                        Analyzes environmental, temporal, and social variables with interaction effects.
+                    </p>
+
+                    <div className="grid md:grid-cols-2 gap-6">
+                        {/* Time of Day */}
+                        <div>
+                            <label className="flex items-center gap-2 text-white font-semibold mb-2">
+                                {timeOfDay === 'late-night' || timeOfDay === 'night' ?
+                                    <Icon name="Moon" size={18} /> : <Icon name="Sun" size={18} />}
+                                Time of Day
+                            </label>
+                            <select
+                                value={timeOfDay}
+                                onChange={(e) => setTimeOfDay(e.target.value)}
+                                className="w-full p-3 rounded-none bg-neutral-800 border border-neutral-700 text-white border border-slate-600 focus:border-blue-500 focus:outline-none"
+                            >
+                                <option value="morning">Morning (6am-12pm)</option>
+                                <option value="afternoon">Afternoon (12pm-6pm)</option>
+                                <option value="evening">Evening (6pm-11pm)</option>
+                                <option value="late-night">Late Night (11pm-4am)</option>
+                                <option value="night">Night (4am-6am)</option>
+                            </select>
+                        </div>
+
+                        {/* Crowd Density */}
+                        <div>
+                            <label className="flex items-center gap-2 text-white font-semibold mb-2">
+                                <Icon name="Users" size={18} />
+                                Crowd Density
+                            </label>
+                            <select
+                                value={crowdDensity}
+                                onChange={(e) => setCrowdDensity(e.target.value)}
+                                className="w-full p-3 rounded-none bg-neutral-800 border border-neutral-700 text-white border border-slate-600 focus:border-blue-500 focus:outline-none"
+                            >
+                                <option value="low">Low (Sparse/Isolated)</option>
+                                <option value="medium">Medium (Moderate)</option>
+                                <option value="high">High (Dense/Crowded)</option>
+                            </select>
+                        </div>
+
+                        {/* Lighting */}
+                        <div>
+                            <label className="flex items-center gap-2 text-white font-semibold mb-2">
+                                <Icon name="Lightbulb" size={18} />
+                                Lighting Conditions
+                            </label>
+                            <select
+                                value={lighting}
+                                onChange={(e) => setLighting(e.target.value)}
+                                className="w-full p-3 rounded-none bg-neutral-800 border border-neutral-700 text-white border border-slate-600 focus:border-blue-500 focus:outline-none"
+                            >
+                                <option value="excellent">Excellent (Well-lit)</option>
+                                <option value="adequate">Adequate (Standard)</option>
+                                <option value="minimal">Minimal (Dim)</option>
+                                <option value="poor">Poor (Dark)</option>
+                            </select>
+                        </div>
+
+                        {/* Alcohol Zones */}
+                        <div>
+                            <label className="flex items-center gap-2 text-white font-semibold mb-2">
+                                <Icon name="Beer" size={18} />
+                                Alcohol Outlets
+                            </label>
+                            <select
+                                value={alcoholZones}
+                                onChange={(e) => setAlcoholZones(e.target.value)}
+                                className="w-full p-3 rounded-none bg-neutral-800 border border-neutral-700 text-white border border-slate-600 focus:border-blue-500 focus:outline-none"
+                            >
+                                <option value="none">None Present</option>
+                                <option value="single">Single Outlet</option>
+                                <option value="multiple">Multiple Outlets</option>
+                            </select>
+                        </div>
+
+                        {/* Events */}
+                        <div>
+                            <label className="flex items-center gap-2 text-white font-semibold mb-2">
+                                <Icon name="Calendar" size={18} />
+                                Events/Activities
+                            </label>
+                            <select
+                                value={events}
+                                onChange={(e) => setEvents(e.target.value)}
+                                className="w-full p-3 rounded-none bg-neutral-800 border border-neutral-700 text-white border border-slate-600 focus:border-blue-500 focus:outline-none"
+                            >
+                                <option value="none">No Special Events</option>
+                                <option value="minor">Minor Event</option>
+                                <option value="major">Major Event</option>
+                            </select>
+                        </div>
+
+                        {/* Visibility */}
+                        <div>
+                            <label className="flex items-center gap-2 text-white font-semibold mb-2">
+                                <Icon name="Activity" size={18} />
+                                Visibility/Sightlines
+                            </label>
+                            <select
+                                value={visibility}
+                                onChange={(e) => setVisibility(e.target.value)}
+                                className="w-full p-3 rounded-none bg-neutral-800 border border-neutral-700 text-white border border-slate-600 focus:border-blue-500 focus:outline-none"
+                            >
+                                <option value="high">High (Open/Clear)</option>
+                                <option value="medium">Medium (Partial)</option>
+                                <option value="low">Low (Obstructed)</option>
+                            </select>
+                        </div>
+
+                        {/* Escape Routes */}
+                        <div>
+                            <label className="flex items-center gap-2 text-white font-semibold mb-2">
+                                <Icon name="MapPin" size={18} />
+                                Escape Routes
+                            </label>
+                            <select
+                                value={escapeRoutes}
+                                onChange={(e) => setEscapeRoutes(e.target.value)}
+                                className="w-full p-3 rounded-none bg-neutral-800 border border-neutral-700 text-white border border-slate-600 focus:border-blue-500 focus:outline-none"
+                            >
+                                <option value="none">None/Limited</option>
+                                <option value="single">Single Route</option>
+                                <option value="multiple">Multiple Routes</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button
+                        onClick={analyzeRisk}
+                        className="w-full bg-cyan-900 border border-cyan-500 text-cyan-100 hover:bg-cyan-800 hover:text-white text-white font-bold py-4 rounded-none transition-colors mt-6"
+                    >
+                        Analyze Scenario
+                    </button>
+
+                    {result && (
+                        <div className="mt-8 space-y-6">
+                            {/* Risk Score Card */}
+                            <div className="p-6 bg-neutral-950 rounded-none border-2 border-slate-700">
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="flex items-center gap-3">
+                                        <Icon name="AlertCircle" size={32} className={result.riskColor} />
+                                        <h3 className={`text-3xl font-bold ${result.riskColor}`}>{result.riskLevel}</h3>
+                                    </div>
+                                    <div className="text-right">
+                                        <div className={`text-4xl font-bold ${result.riskColor}`}>
+                                            {result.scoreData.totalScore}
+                                        </div>
+                                        <div className="text-sm text-slate-400">Risk Score</div>
+                                    </div>
+                                </div>
+
+                                {/* Score Breakdown */}
+                                <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mt-6">
+                                    <div className="bg-neutral-900 border border-neutral-800 p-3 rounded">
+                                        <div className="text-xs text-slate-400 mb-1">Temporal</div>
+                                        <div className="text-xl font-bold text-white">{result.scoreData.breakdown.temporal}</div>
+                                    </div>
+                                    <div className="bg-neutral-900 border border-neutral-800 p-3 rounded">
+                                        <div className="text-xs text-slate-400 mb-1">Environmental</div>
+                                        <div className="text-xl font-bold text-white">{result.scoreData.breakdown.environmental}</div>
+                                    </div>
+                                    <div className="bg-neutral-900 border border-neutral-800 p-3 rounded">
+                                        <div className="text-xs text-slate-400 mb-1">Social</div>
+                                        <div className="text-xl font-bold text-white">{result.scoreData.breakdown.social}</div>
+                                    </div>
+                                    <div className="bg-neutral-900 border border-neutral-800 p-3 rounded">
+                                        <div className="text-xs text-slate-400 mb-1">Substance</div>
+                                        <div className="text-xl font-bold text-white">{result.scoreData.breakdown.substance}</div>
+                                    </div>
+                                    <div className="bg-neutral-900 border border-neutral-800 p-3 rounded">
+                                        <div className="text-xs text-slate-400 mb-1">Interactions</div>
+                                        <div className="text-xl font-bold text-orange-400">{result.scoreData.breakdown.interaction}</div>
+                                    </div>
+                                </div>
+
+                                <div className="mt-6">
+                                    <h4 className="text-xl font-semibold text-white mb-2">Criminological Assessment:</h4>
+                                    <p className="text-slate-300">{result.theory}</p>
+                                </div>
+                            </div>
+
+                            {/* Contributing Factors */}
+                            <div className="p-6 bg-neutral-950 rounded-none">
+                                <h4 className="text-xl font-semibold text-white mb-3">Contributing Factors:</h4>
+                                <ul className="space-y-2">
+                                    {result.factors.map((factor, index) => (
+                                        <li key={index} className="text-slate-300 flex gap-2">
+                                            <span className="text-cyan-500 mt-1">•</span>
+                                            <span>{factor}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+
+                            {/* AI Insights Button */}
+                            {isConnected && (
+                                <button
+                                    onClick={getAIInsights}
+                                    disabled={loadingInsight}
+                                    className="w-full bg-amber-900 border border-amber-600 hover:bg-purple-700 disabled:bg-slate-600 text-white font-bold py-4 rounded-none transition-colors flex items-center justify-center gap-2"
+                                >
+                                    <Icon name="Brain" size={20} />
+                                    {loadingInsight ? 'Analyzing with AI...' : 'Get AI Insights'}
+                                </button>
+                            )}
+
+                            {/* AI Insights Display */}
+                            {aiInsight && (
+                                <div className="p-6 bg-neutral-900 border border-amber-900/50 bg-opacity-30 rounded-none border-2 border-purple-700">
+                                    <h4 className="text-xl font-semibold text-white mb-3 flex items-center gap-2">
+                                        <Icon name="Brain" size={24} />
+                                        AI Analysis (Llama 3.2)
+                                    </h4>
+                                    <div className="text-purple-100 whitespace-pre-wrap">{aiInsight}</div>
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        // Hotspot Simulator (Enhanced)
+        const HotspotSimulator = ({ getInsights, isLoading, isConnected }) => {
+            const [lighting, setLighting] = useState(5);
+            const [patrols, setPatrols] = useState(3);
+            const [alcoholOutlets, setAlcoholOutlets] = useState(2);
+            const [cctv, setCctv] = useState(3);
+            const [socialCohesion, setSocialCohesion] = useState(5);
+            const [showComparison, setShowComparison] = useState(false);
+            const [aiInsight, setAiInsight] = useState('');
+            const [loadingInsight, setLoadingInsight] = useState(false);
+
+            const calculateHotspots = (light, patrol, alcohol, cctvLevel, cohesion) => {
+                const hotspots = [];
+
+                const zones = [
+                    { name: 'Entertainment District', base: 75, alcoholSensitivity: 1.5 },
+                    { name: 'Transit Hub', base: 65, lightSensitivity: 1.3 },
+                    { name: 'Residential Area', base: 40, cohesionSensitivity: 1.4 },
+                    { name: 'Commercial Center', base: 60, patrolSensitivity: 1.2 },
+                    { name: 'Parks/Recreation', base: 55, cctvSensitivity: 1.3 },
+                    { name: 'Industrial Zone', base: 50, lightSensitivity: 1.4 }
+                ];
+
+                zones.forEach(zone => {
+                    let intensity = zone.base;
+
+                    // Apply weighted factors
+                    intensity -= (light * 2.5 * (zone.lightSensitivity || 1));
+                    intensity -= (patrol * 3.5 * (zone.patrolSensitivity || 1));
+                    intensity += (alcohol * 6 * (zone.alcoholSensitivity || 1));
+                    intensity -= (cctvLevel * 2 * (zone.cctvSensitivity || 1));
+                    intensity -= (cohesion * 1.5 * (zone.cohesionSensitivity || 1));
+
+                    intensity = Math.max(5, Math.min(100, intensity));
+
+                    hotspots.push({
+                        name: zone.name,
+                        intensity: Math.round(intensity),
+                        color: intensity > 70 ? 'bg-red-500' : intensity > 40 ? 'bg-yellow-500' : 'bg-green-500'
+                    });
+                });
+
+                return hotspots.sort((a, b) => b.intensity - a.intensity);
+            };
+
+            const currentHotspots = calculateHotspots(lighting, patrols, alcoholOutlets, cctv, socialCohesion);
+            const improvedHotspots = calculateHotspots(9, 8, 1, 8, 8);
+
+            const getAIHotspotInsights = async () => {
+                setLoadingInsight(true);
+                const totalIntensity = currentHotspots.reduce((sum, spot) => sum + spot.intensity, 0);
+                const avgIntensity = (totalIntensity / currentHotspots.length).toFixed(1);
+
+                const prompt = `As a crime prevention expert, analyze this hotspot distribution:
+
+Current Settings:
+- Lighting Quality: ${lighting}/10
+- Patrol Frequency: ${patrols}/10
+- Alcohol Outlet Density: ${alcoholOutlets}/5
+- CCTV Coverage: ${cctv}/10
+- Social Cohesion: ${socialCohesion}/10
+
+Hotspot Results:
+${currentHotspots.map(spot => `- ${spot.name}: ${spot.intensity}% intensity`).join('\n')}
+Average Intensity: ${avgIntensity}%
+
+Provide:
+1. Which zone needs the most urgent intervention and why
+2. The most cost-effective intervention to reduce overall crime
+3. Potential displacement effects to watch for
+
+Keep response under 200 words.`;
+
+                const insight = await getInsights(prompt);
+                setAiInsight(insight);
+                setLoadingInsight(false);
+            };
+
+            return (
+                <div className="space-y-6">
+                    <h2 className="text-2xl font-bold text-white mb-4">Advanced Hotspot Analysis</h2>
+                    <p className="text-slate-300 mb-6">
+                        Multi-variable crime hotspot simulation using situational crime prevention principles.
+                        Models interaction effects between environmental interventions.
+                    </p>
+
+                    <div className="space-y-6">
+                        {/* Lighting Control */}
+                        <div>
+                            <label className="flex items-center justify-between text-white font-semibold mb-2">
+                                <span className="flex items-center gap-2">
+                                    <Icon name="Lightbulb" size={18} />
+                                    Lighting Quality
+                                </span>
+                                <span className="text-cyan-500">{lighting}/10</span>
+                            </label>
+                            <input
+                                type="range"
+                                min="1"
+                                max="10"
+                                value={lighting}
+                                onChange={(e) => setLighting(parseInt(e.target.value))}
+                                className="w-full"
+                            />
+                            <p className="text-sm text-slate-400 mt-1">
+                                Increased illumination enhances natural surveillance (CPTED)
+                            </p>
+                        </div>
+
+                        {/* Patrol Control */}
+                        <div>
+                            <label className="flex items-center justify-between text-white font-semibold mb-2">
+                                <span className="flex items-center gap-2">
+                                    <Icon name="Shield" size={18} />
+                                    Patrol Frequency
+                                </span>
+                                <span className="text-cyan-500">{patrols}/10</span>
+                            </label>
+                            <input
+                                type="range"
+                                min="1"
+                                max="10"
+                                value={patrols}
+                                onChange={(e) => setPatrols(parseInt(e.target.value))}
+                                className="w-full"
+                            />
+                            <p className="text-sm text-slate-400 mt-1">
+                                Higher guardianship reduces opportunity (Routine Activity Theory)
+                            </p>
+                        </div>
+
+                        {/* Alcohol Outlets */}
+                        <div>
+                            <label className="flex items-center justify-between text-white font-semibold mb-2">
+                                <span className="flex items-center gap-2">
+                                    <Icon name="Beer" size={18} />
+                                    Alcohol Outlet Density
+                                </span>
+                                <span className="text-cyan-500">{alcoholOutlets}/5</span>
+                            </label>
+                            <input
+                                type="range"
+                                min="0"
+                                max="5"
+                                value={alcoholOutlets}
+                                onChange={(e) => setAlcoholOutlets(parseInt(e.target.value))}
+                                className="w-full"
+                            />
+                            <p className="text-sm text-slate-400 mt-1">
+                                Outlet density correlates with violence concentration
+                            </p>
+                        </div>
+
+                        {/* CCTV Coverage */}
+                        <div>
+                            <label className="flex items-center justify-between text-white font-semibold mb-2">
+                                <span className="flex items-center gap-2">
+                                    <Icon name="Activity" size={18} />
+                                    CCTV Coverage
+                                </span>
+                                <span className="text-cyan-500">{cctv}/10</span>
+                            </label>
+                            <input
+                                type="range"
+                                min="0"
+                                max="10"
+                                value={cctv}
+                                onChange={(e) => setCctv(parseInt(e.target.value))}
+                                className="w-full"
+                            />
+                            <p className="text-sm text-slate-400 mt-1">
+                                Surveillance technology increases perceived risk of detection
+                            </p>
+                        </div>
+
+                        {/* Social Cohesion */}
+                        <div>
+                            <label className="flex items-center justify-between text-white font-semibold mb-2">
+                                <span className="flex items-center gap-2">
+                                    <Icon name="Users" size={18} />
+                                    Community Social Cohesion
+                                </span>
+                                <span className="text-cyan-500">{socialCohesion}/10</span>
+                            </label>
+                            <input
+                                type="range"
+                                min="1"
+                                max="10"
+                                value={socialCohesion}
+                                onChange={(e) => setSocialCohesion(parseInt(e.target.value))}
+                                className="w-full"
+                            />
+                            <p className="text-sm text-slate-400 mt-1">
+                                Collective efficacy strengthens informal social control
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* Current State Map */}
+                    <div className="bg-neutral-950 p-6 rounded-none">
+                        <h3 className="text-xl font-semibold text-white mb-4">Current Hotspot Distribution</h3>
+                        <div className="space-y-3">
+                            {currentHotspots.map((spot, index) => (
+                                <div key={index}>
+                                    <div className="flex justify-between text-sm mb-1">
+                                        <span className="text-white font-medium">{spot.name}</span>
+                                        <span className="text-slate-400">Intensity: {spot.intensity}%</span>
+                                    </div>
+                                    <div className="w-full bg-neutral-800 border border-neutral-700 rounded-none h-7 overflow-hidden">
+                                        <div
+                                            className={`${spot.color} h-full transition-all duration-500 flex items-center justify-end pr-2`}
+                                            style={{ width: `${spot.intensity}%` }}
+                                        >
+                                            <span className="text-white text-xs font-bold">{spot.intensity}%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* AI Insights Button */}
+                    {isConnected && (
+                        <button
+                            onClick={getAIHotspotInsights}
+                            disabled={loadingInsight}
+                            className="w-full bg-amber-900 border border-amber-600 hover:bg-purple-700 disabled:bg-slate-600 text-white font-bold py-4 rounded-none transition-colors flex items-center justify-center gap-2"
+                        >
+                            <Icon name="Brain" size={20} />
+                            {loadingInsight ? 'Analyzing with AI...' : 'Get AI Insights'}
+                        </button>
+                    )}
+
+                    {/* AI Insights Display */}
+                    {aiInsight && (
+                        <div className="p-6 bg-neutral-900 border border-amber-900/50 bg-opacity-30 rounded-none border-2 border-purple-700">
+                            <h4 className="text-xl font-semibold text-white mb-3 flex items-center gap-2">
+                                <Icon name="Brain" size={24} />
+                                AI Analysis (Llama 3.2)
+                            </h4>
+                            <div className="text-purple-100 whitespace-pre-wrap">{aiInsight}</div>
+                        </div>
+                    )}
+
+                    {/* Comparison Toggle */}
+                    <button
+                        onClick={() => setShowComparison(!showComparison)}
+                        className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-none transition-colors"
+                    >
+                        {showComparison ? 'Hide' : 'Show'} Optimal Intervention Scenario
+                    </button>
+
+                    {/* Optimal State Comparison */}
+                    {showComparison && (
+                        <div className="bg-green-900 bg-opacity-30 p-6 rounded-none border-2 border-green-700">
+                            <h3 className="text-xl font-semibold text-white mb-4">
+                                After Comprehensive Interventions
+                            </h3>
+                            <p className="text-green-200 text-sm mb-4">
+                                (Enhanced lighting + Increased patrols + Reduced alcohol density + CCTV + Community programs)
+                            </p>
+                            <div className="space-y-3">
+                                {improvedHotspots.map((spot, index) => (
+                                    <div key={index}>
+                                        <div className="flex justify-between text-sm mb-1">
+                                            <span className="text-white font-medium">{spot.name}</span>
+                                            <span className="text-slate-400">Intensity: {spot.intensity}%</span>
+                                        </div>
+                                        <div className="w-full bg-neutral-800 border border-neutral-700 rounded-none h-7 overflow-hidden">
+                                            <div
+                                                className={`${spot.color} h-full transition-all duration-500 flex items-center justify-end pr-2`}
+                                                style={{ width: `${spot.intensity}%` }}
+                                            >
+                                                <span className="text-white text-xs font-bold">{spot.intensity}%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                            <p className="text-green-200 mt-4 text-sm">
+                                Theory: Multi-pronged approach demonstrates synergistic effects. Crime displacement mitigated
+                                through comprehensive coverage. Overall reduction reflects environmental criminology principles.
+                            </p>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        // Vulnerability Simulator (Enhanced)
+        const VulnerabilitySimulator = ({ getInsights, isLoading, isConnected }) => {
+            const [timeExposure, setTimeExposure] = useState('moderate');
+            const [lighting, setLighting] = useState('adequate');
+            const [crowdDensity, setCrowdDensity] = useState('medium');
+            const [perceivedSafety, setPerceivedSafety] = useState('neutral');
+            const [accessibility, setAccessibility] = useState('moderate');
+            const [signage, setSignage] = useState('adequate');
+            const [maintenance, setMaintenance] = useState('good');
+            const [result, setResult] = useState(null);
+            const [aiInsight, setAiInsight] = useState('');
+            const [loadingInsight, setLoadingInsight] = useState(false);
+
+            const calculateVulnerability = () => {
+                let score = 0;
+                let factors = [];
+                const zones = [];
+
+                // Enhanced vulnerability scoring
+                const exposureScores = { 'brief': 1, 'moderate': 2.5, 'extended': 4 };
+                const lightScores = { 'excellent': 0.5, 'adequate': 1.5, 'minimal': 3, 'poor': 4 };
+                const crowdScores = { 'high': 0.5, 'medium': 1.5, 'low': 4 };
+                const safetyScores = { 'safe': 0, 'neutral': 1.5, 'unsafe': 3 };
+                const accessScores = { 'low': 0.5, 'moderate': 1.5, 'high': 3 };
+                const signageScores = { 'excellent': 0, 'adequate': 1, 'poor': 2.5 };
+                const maintenanceScores = { 'excellent': 0, 'good': 1, 'poor': 3 };
+
+                score += exposureScores[timeExposure] || 2;
+                score += lightScores[lighting] || 2;
+                score += crowdScores[crowdDensity] || 2;
+                score += safetyScores[perceivedSafety] || 1;
+                score += accessScores[accessibility] || 1;
+                score += signageScores[signage] || 1;
+                score += maintenanceScores[maintenance] || 1;
+
+                // Factor descriptions
+                if (timeExposure === 'extended') {
+                    factors.push('Extended temporal exposure creates routine patterns, increasing predictability for potential offenders (Routine Activity Theory)');
+                } else if (timeExposure === 'moderate') {
+                    factors.push('Regular presence establishes observable patterns while maintaining some unpredictability');
+                } else {
+                    factors.push('Brief exposure limits target availability and pattern recognition');
+                }
+
+                if (lighting === 'poor') {
+                    factors.push('Critical lighting deficit creates concealment opportunities, violates CPTED principles');
+                } else if (lighting === 'minimal') {
+                    factors.push('Suboptimal lighting reduces natural surveillance capability');
+                } else if (lighting === 'adequate') {
+                    factors.push('Standard lighting provides baseline visibility');
+                } else {
+                    factors.push('Excellent lighting maximizes natural surveillance and perceived safety');
+                }
+
+                if (crowdDensity === 'low') {
+                    factors.push('Low population density reduces capable guardianship and bystander intervention probability');
+                } else if (crowdDensity === 'medium') {
+                    factors.push('Moderate density balances surveillance with manageability');
+                } else {
+                    factors.push('High density provides strong natural surveillance through numbers');
+                }
+
+                if (perceivedSafety === 'unsafe') {
+                    factors.push('Low perceived safety may indicate historical crime patterns or reputation effects');
+                } else if (perceivedSafety === 'neutral') {
+                    factors.push('Neutral safety perception suggests mixed environmental cues');
+                } else {
+                    factors.push('High perceived safety correlates with protective environmental features');
+                }
+
+                if (accessibility === 'high') {
+                    factors.push('Multiple access points increase offender approach opportunities and escape routes');
+                } else if (accessibility === 'moderate') {
+                    factors.push('Controlled access balances legitimate use with security');
+                } else {
+                    factors.push('Restricted access limits unauthorized entry');
+                }
+
+                if (signage === 'poor') {
+                    factors.push('Poor wayfinding increases disorientation and reduces emergency egress capability');
+                } else if (signage === 'adequate') {
+                    factors.push('Standard signage provides basic navigation support');
+                } else {
+                    factors.push('Excellent signage enhances orientation and safety awareness');
+                }
+
+                if (maintenance === 'poor') {
+                    factors.push('Poor maintenance signals low guardianship (Broken Windows Theory)');
+                } else if (maintenance === 'good') {
+                    factors.push('Good maintenance demonstrates active management');
+                } else {
+                    factors.push('Excellent maintenance signals strong territorial control');
+                }
+
+                // Generate vulnerability zones
+                const zoneData = [
+                    { name: 'Parking Structures', base: 65, lightWeight: 1.5 },
+                    { name: 'Pedestrian Walkways', base: 55, crowdWeight: 1.4 },
+                    { name: 'Transit Stations', base: 60, accessWeight: 1.3 },
+                    { name: 'Commercial Areas', base: 45, maintenanceWeight: 1.3 },
+                    { name: 'Recreational Spaces', base: 50, signageWeight: 1.2 },
+                    { name: 'Residential Perimeters', base: 48, safetyWeight: 1.4 }
+                ];
+
+                zoneData.forEach(zone => {
+                    let vulnerability = zone.base + (score * 2);
+                    vulnerability = Math.min(100, Math.max(10, vulnerability));
+
+                    zones.push({
+                        name: zone.name,
+                        vulnerability: Math.round(vulnerability),
+                        level: vulnerability > 70 ? 'High' : vulnerability > 40 ? 'Moderate' : 'Low',
+                        color: vulnerability > 70 ? 'text-red-400' : vulnerability > 40 ? 'text-yellow-400' : 'text-green-400'
+                    });
+                });
+
+                let overallLevel, overallColor, recommendations;
+                if (score <= 6) {
+                    overallLevel = 'LOW VULNERABILITY';
+                    overallColor = 'text-green-400';
+                    recommendations = [
+                        'Environment demonstrates strong protective factors',
+                        'Maintain current infrastructure and management practices',
+                        'Continue community engagement and awareness programs',
+                        'Monitor for emerging vulnerabilities through regular audits'
+                    ];
+                } else if (score <= 12) {
+                    overallLevel = 'MODERATE VULNERABILITY';
+                    overallColor = 'text-yellow-400';
+                    recommendations = [
+                        'Prioritize lighting improvements in identified zones',
+                        'Enhance wayfinding and emergency communication systems',
+                        'Implement targeted CPTED assessment for high-risk areas',
+                        'Increase visible guardianship during peak vulnerability periods',
+                        'Improve maintenance schedules to address visible disorder'
+                    ];
+                } else {
+                    overallLevel = 'ELEVATED VULNERABILITY';
+                    overallColor = 'text-red-400';
+                    recommendations = [
+                        'URGENT: Comprehensive lighting overhaul required',
+                        'Increase guardianship presence through patrols and CCTV',
+                        'Redesign spaces to eliminate isolation and entrapment zones',
+                        'Install emergency call stations and panic buttons',
+                        'Conduct full CPTED assessment with immediate remediation',
+                        'Engage community in safety planning and awareness',
+                        'Consider access control modifications for high-risk zones'
+                    ];
+                }
+
+                setResult({ overallLevel, overallColor, factors, zones, recommendations, score });
+            };
+
+            const getAIVulnerabilityInsights = async () => {
+                if (!result) return;
+
+                setLoadingInsight(true);
+                const prompt = `As a crime prevention expert specializing in CPTED, analyze this vulnerability assessment:
+
+Overall Level: ${result.overallLevel}
+Vulnerability Score: ${result.score.toFixed(1)}/20
+
+Environmental Factors:
+- Time Exposure: ${timeExposure}
+- Lighting: ${lighting}
+- Crowd Density: ${crowdDensity}
+- Perceived Safety: ${perceivedSafety}
+- Accessibility: ${accessibility}
+- Signage: ${signage}
+- Maintenance: ${maintenance}
+
+High-Risk Zones:
+${result.zones.filter(z => z.level === 'High').map(z => `- ${z.name}: ${z.vulnerability}%`).join('\n') || 'None'}
+
+Provide:
+1. The single most impactful intervention to reduce vulnerability
+2. How to address the highest-risk zone specifically
+3. Long-term strategy considerations
+
+Keep response under 200 words.`;
+
+                const insight = await getInsights(prompt);
+                setAiInsight(insight);
+                setLoadingInsight(false);
+            };
+
+            return (
+                <div className="space-y-6">
+                    <h2 className="text-2xl font-bold text-white mb-4">Comprehensive Vulnerability Assessment</h2>
+                    <p className="text-slate-300 mb-6">
+                        Multi-dimensional environmental vulnerability analysis based on CPTED, Routine Activity Theory,
+                        and Broken Windows Theory. Assesses victim-side risk factors across spatial and temporal dimensions.
+                    </p>
+
+                    <div className="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label className="flex items-center gap-2 text-white font-semibold mb-2">
+                                <Icon name="MapPin" size={18} />
+                                Time Exposure Pattern
+                            </label>
+                            <select
+                                value={timeExposure}
+                                onChange={(e) => setTimeExposure(e.target.value)}
+                                className="w-full p-3 rounded-none bg-neutral-800 border border-neutral-700 text-white border border-slate-600 focus:border-blue-500 focus:outline-none"
+                            >
+                                <option value="brief">Brief (Transient/passing through)</option>
+                                <option value="moderate">Moderate (Regular presence)</option>
+                                <option value="extended">Extended (Frequent/predictable)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label className="flex items-center gap-2 text-white font-semibold mb-2">
+                                <Icon name="Lightbulb" size={18} />
+                                Lighting Quality
+                            </label>
+                            <select
+                                value={lighting}
+                                onChange={(e) => setLighting(e.target.value)}
+                                className="w-full p-3 rounded-none bg-neutral-800 border border-neutral-700 text-white border border-slate-600 focus:border-blue-500 focus:outline-none"
+                            >
+                                <option value="excellent">Excellent (Well-lit, uniform)</option>
+                                <option value="adequate">Adequate (Standard)</option>
+                                <option value="minimal">Minimal (Dim, inconsistent)</option>
+                                <option value="poor">Poor (Dark, shadowed)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label className="flex items-center gap-2 text-white font-semibold mb-2">
+                                <Icon name="Users" size={18} />
+                                Crowd Density
+                            </label>
+                            <select
+                                value={crowdDensity}
+                                onChange={(e) => setCrowdDensity(e.target.value)}
+                                className="w-full p-3 rounded-none bg-neutral-800 border border-neutral-700 text-white border border-slate-600 focus:border-blue-500 focus:outline-none"
+                            >
+                                <option value="high">High (Dense, active)</option>
+                                <option value="medium">Medium (Moderate activity)</option>
+                                <option value="low">Low (Isolated, sparse)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label className="flex items-center gap-2 text-white font-semibold mb-2">
+                                <Icon name="Shield" size={18} />
+                                Perceived Safety
+                            </label>
+                            <select
+                                value={perceivedSafety}
+                                onChange={(e) => setPerceivedSafety(e.target.value)}
+                                className="w-full p-3 rounded-none bg-neutral-800 border border-neutral-700 text-white border border-slate-600 focus:border-blue-500 focus:outline-none"
+                            >
+                                <option value="safe">Feels Safe</option>
+                                <option value="neutral">Neutral</option>
+                                <option value="unsafe">Feels Unsafe</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label className="flex items-center gap-2 text-white font-semibold mb-2">
+                                <Icon name="MapPin" size={18} />
+                                Area Accessibility
+                            </label>
+                            <select
+                                value={accessibility}
+                                onChange={(e) => setAccessibility(e.target.value)}
+                                className="w-full p-3 rounded-none bg-neutral-800 border border-neutral-700 text-white border border-slate-600 focus:border-blue-500 focus:outline-none"
+                            >
+                                <option value="low">Low (Restricted access)</option>
+                                <option value="moderate">Moderate (Controlled access)</option>
+                                <option value="high">High (Open, multiple routes)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label className="flex items-center gap-2 text-white font-semibold mb-2">
+                                <Icon name="MapPin" size={18} />
+                                Wayfinding/Signage
+                            </label>
+                            <select
+                                value={signage}
+                                onChange={(e) => setSignage(e.target.value)}
+                                className="w-full p-3 rounded-none bg-neutral-800 border border-neutral-700 text-white border border-slate-600 focus:border-blue-500 focus:outline-none"
+                            >
+                                <option value="excellent">Excellent (Clear, comprehensive)</option>
+                                <option value="adequate">Adequate (Basic coverage)</option>
+                                <option value="poor">Poor (Minimal, confusing)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label className="flex items-center gap-2 text-white font-semibold mb-2">
+                                <Icon name="Activity" size={18} />
+                                Environmental Maintenance
+                            </label>
+                            <select
+                                value={maintenance}
+                                onChange={(e) => setMaintenance(e.target.value)}
+                                className="w-full p-3 rounded-none bg-neutral-800 border border-neutral-700 text-white border border-slate-600 focus:border-blue-500 focus:outline-none"
+                            >
+                                <option value="excellent">Excellent (Well-maintained)</option>
+                                <option value="good">Good (Regular upkeep)</option>
+                                <option value="poor">Poor (Visible disorder)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button
+                        onClick={calculateVulnerability}
+                        className="w-full bg-cyan-900 border border-cyan-500 text-cyan-100 hover:bg-cyan-800 hover:text-white text-white font-bold py-4 rounded-none transition-colors mt-6"
+                    >
+                        Generate Vulnerability Assessment
+                    </button>
+
+                    {result && (
+                        <div className="mt-8 space-y-6">
+                            {/* Overall Assessment */}
+                            <div className="p-6 bg-neutral-950 rounded-none border-2 border-slate-700">
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="flex items-center gap-3">
+                                        <Icon name="Shield" size={32} className={result.overallColor} />
+                                        <h3 className={`text-3xl font-bold ${result.overallColor}`}>{result.overallLevel}</h3>
+                                    </div>
+                                    <div className="text-right">
+                                        <div className={`text-4xl font-bold ${result.overallColor}`}>
+                                            {result.score.toFixed(1)}
+                                        </div>
+                                        <div className="text-sm text-slate-400">/ 20</div>
+                                    </div>
+                                </div>
+
+                                <div className="mb-4">
+                                    <h4 className="text-xl font-semibold text-white mb-3">Environmental Factors:</h4>
+                                    <ul className="space-y-2">
+                                        {result.factors.map((factor, index) => (
+                                            <li key={index} className="text-slate-300 flex gap-2">
+                                                <span className="text-cyan-500 mt-1">•</span>
+                                                <span>{factor}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            </div>
+
+                            {/* Zone Vulnerability Map */}
+                            <div className="p-6 bg-neutral-950 rounded-none">
+                                <h4 className="text-xl font-semibold text-white mb-4">Vulnerability by Zone Type</h4>
+                                <div className="space-y-4">
+                                    {result.zones.sort((a, b) => b.vulnerability - a.vulnerability).map((zone, index) => (
+                                        <div key={index}>
+                                            <div className="flex justify-between items-center mb-2">
+                                                <span className="text-white font-medium">{zone.name}</span>
+                                                <span className={`font-bold ${zone.color}`}>{zone.level}</span>
+                                            </div>
+                                            <div className="w-full bg-neutral-800 border border-neutral-700 rounded-none h-7 overflow-hidden">
+                                                <div
+                                                    className={`h-full transition-all duration-500 flex items-center px-3 ${zone.level === 'High' ? 'bg-red-500' :
+                                                        zone.level === 'Moderate' ? 'bg-yellow-500' : 'bg-green-500'
+                                                        }`}
+                                                    style={{ width: `${zone.vulnerability}%` }}
+                                                >
+                                                    <span className="text-white text-xs font-bold">{zone.vulnerability}%</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* AI Insights Button */}
+                            {isConnected && (
+                                <button
+                                    onClick={getAIVulnerabilityInsights}
+                                    disabled={loadingInsight}
+                                    className="w-full bg-amber-900 border border-amber-600 hover:bg-purple-700 disabled:bg-slate-600 text-white font-bold py-4 rounded-none transition-colors flex items-center justify-center gap-2"
+                                >
+                                    <Icon name="Brain" size={20} />
+                                    {loadingInsight ? 'Analyzing with AI...' : 'Get AI Insights'}
+                                </button>
+                            )}
+
+                            {/* AI Insights Display */}
+                            {aiInsight && (
+                                <div className="p-6 bg-neutral-900 border border-amber-900/50 bg-opacity-30 rounded-none border-2 border-purple-700">
+                                    <h4 className="text-xl font-semibold text-white mb-3 flex items-center gap-2">
+                                        <Icon name="Brain" size={24} />
+                                        AI Analysis (Llama 3.2)
+                                    </h4>
+                                    <div className="text-purple-100 whitespace-pre-wrap">{aiInsight}</div>
+                                </div>
+                            )}
+
+                            {/* Recommendations */}
+                            <div className="p-6 bg-blue-900 bg-opacity-30 rounded-none border-2 border-blue-700">
+                                <h4 className="text-xl font-semibold text-white mb-3">Recommended Interventions:</h4>
+                                <ul className="space-y-2">
+                                    {result.recommendations.map((rec, index) => (
+                                        <li key={index} className="text-blue-100 flex gap-2">
+                                            <span className="text-cyan-500 mt-1">→</span>
+                                            <span>{rec}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+
+                            {/* Disclaimer */}
+                            <div className="p-4 bg-neutral-800 border border-neutral-700 rounded-none border-l-4 border-yellow-500">
+                                <p className="text-sm text-slate-300">
+                                    <strong className="text-yellow-400">Methodology Note:</strong> This assessment analyzes environmental
+                                    and situational vulnerability factors using CPTED principles, not individual risk profiles or offender
+                                    behavior prediction. Designed for environmental design, policy planning, and security auditing purposes.
+                                </p>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        // NEW: Predictive Modeling Simulator
+        const PredictiveModelingSimulator = ({ getInsights, isLoading, isConnected }) => {
+            const [historicalCrime, setHistoricalCrime] = useState(50);
+            const [socioeconomic, setSocioeconomic] = useState(5);
+            const [demographics, setDemographics] = useState(5);
+            const [seasonality, setSeasonality] = useState('summer');
+            const [intervention, setIntervention] = useState('none');
+            const [result, setResult] = useState(null);
+            const [aiInsight, setAiInsight] = useState('');
+            const [loadingInsight, setLoadingInsight] = useState(false);
+
+            const predictCrimeTrends = () => {
+                // Base prediction model
+                let baseRate = historicalCrime;
+
+                // Socioeconomic factors (unemployment, poverty)
+                const socioFactor = (socioeconomic - 5) * 5; // -25 to +25
+
+                // Demographics (youth population percentage)
+                const demoFactor = (demographics - 5) * 3; // -15 to +15
+
+                // Seasonality effects
+                const seasonalFactors = {
+                    'winter': -10,
+                    'spring': 5,
+                    'summer': 15,
+                    'fall': 0
+                };
+                const seasonalEffect = seasonalFactors[seasonality] || 0;
+
+                // Intervention effects
+                const interventionEffects = {
+                    'none': 0,
+                    'lighting': -8,
+                    'patrols': -12,
+                    'cctv': -10,
+                    'community': -15,
+                    'comprehensive': -25
+                };
+                const interventionEffect = interventionEffects[intervention] || 0;
+
+                // Calculate predicted rate
+                let predictedRate = baseRate + socioFactor + demoFactor + seasonalEffect + interventionEffect;
+                predictedRate = Math.max(5, Math.min(100, predictedRate));
+
+                // Calculate confidence intervals (simplified)
+                const variance = 10 + (Math.abs(socioFactor) + Math.abs(demoFactor)) * 0.3;
+                const lowerBound = Math.max(0, predictedRate - variance);
+                const upperBound = Math.min(100, predictedRate + variance);
+
+                // Generate trend data
+                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                const trendData = months.map((month, index) => {
+                    const monthlyVariation = Math.sin(index * 0.5) * 8;
+                    return {
+                        month,
+                        predicted: Math.round(predictedRate + monthlyVariation),
+                        historical: Math.round(baseRate + monthlyVariation * 0.7)
+                    };
+                });
+
+                // Generate insights
+                const insights = [];
+
+                if (socioFactor > 10) {
+                    insights.push('Elevated socioeconomic stress factors significantly increase predicted crime rate');
+                } else if (socioFactor < -10) {
+                    insights.push('Improved socioeconomic conditions contribute to predicted crime reduction');
+                }
+
+                if (demoFactor > 5) {
+                    insights.push('High youth population density correlates with increased risk (age-crime curve)');
+                }
+
+                if (seasonalEffect > 10) {
+                    insights.push('Summer seasonal effect shows elevated outdoor crime patterns (temperature-crime relationship)');
+                }
+
+                if (interventionEffect < -10) {
+                    insights.push(`Intervention strategy shows significant predicted impact (${Math.abs(interventionEffect)}% reduction)`);
+                }
+
+                const change = ((predictedRate - baseRate) / baseRate * 100);
+                const changeDirection = change > 5 ? 'increase' : change < -5 ? 'decrease' : 'stable';
+
+                setResult({
+                    predictedRate: Math.round(predictedRate),
+                    lowerBound: Math.round(lowerBound),
+                    upperBound: Math.round(upperBound),
+                    change: Math.abs(Math.round(change)),
+                    changeDirection,
+                    trendData,
+                    insights
+                });
+            };
+
+            const getAIPredictiveInsights = async () => {
+                if (!result) return;
+
+                setLoadingInsight(true);
+                const prompt = `As a crime analyst, interpret this predictive crime model:
+
+Historical Crime Rate: ${historicalCrime}/100
+Predicted Rate: ${result.predictedRate}/100 (${result.lowerBound}-${result.upperBound})
+Change: ${result.change}% ${result.changeDirection}
+
+Input Factors:
+- Socioeconomic Index: ${socioeconomic}/10
+- Youth Demographics: ${demographics}/10
+- Season: ${seasonality}
+- Intervention: ${intervention}
+
+Provide:
+1. Interpretation of the prediction and its reliability
+2. Key factors driving the forecast
+3. Recommendations for improving prediction accuracy or reducing future crime
+
+Keep response under 200 words.`;
+
+                const insight = await getInsights(prompt);
+                setAiInsight(insight);
+                setLoadingInsight(false);
+            };
+
+            return (
+                <div className="space-y-6">
+                    <h2 className="text-2xl font-bold text-white mb-4">Predictive Crime Modeling</h2>
+                    <p className="text-slate-300 mb-6">
+                        Forecast crime trends using historical data, socioeconomic indicators, and intervention scenarios.
+                        Based on established correlations in criminological research.
+                    </p>
+
+                    <div className="space-y-6">
+                        {/* Historical Crime Rate */}
+                        <div>
+                            <label className="flex items-center justify-between text-white font-semibold mb-2">
+                                <span className="flex items-center gap-2">
+                                    <Icon name="Activity" size={18} />
+                                    Historical Crime Rate (Baseline)
+                                </span>
+                                <span className="text-cyan-500">{historicalCrime}/100</span>
+                            </label>
+                            <input
+                                type="range"
+                                min="10"
+                                max="90"
+                                value={historicalCrime}
+                                onChange={(e) => setHistoricalCrime(parseInt(e.target.value))}
+                                className="w-full"
+                            />
+                            <p className="text-sm text-slate-400 mt-1">
+                                Average crime incidents per 1000 population over past year
+                            </p>
+                        </div>
+
+                        {/* Socioeconomic Index */}
+                        <div>
+                            <label className="flex items-center justify-between text-white font-semibold mb-2">
+                                <span className="flex items-center gap-2">
+                                    <Icon name="TrendingUp" size={18} />
+                                    Socioeconomic Stress Index
+                                </span>
+                                <span className="text-cyan-500">{socioeconomic}/10</span>
+                            </label>
+                            <input
+                                type="range"
+                                min="1"
+                                max="10"
+                                value={socioeconomic}
+                                onChange={(e) => setSocioeconomic(parseInt(e.target.value))}
+                                className="w-full"
+                            />
+                            <p className="text-sm text-slate-400 mt-1">
+                                1 = Low unemployment/poverty, 10 = High unemployment/poverty
+                            </p>
+                        </div>
+
+                        {/* Demographics */}
+                        <div>
+                            <label className="flex items-center justify-between text-white font-semibold mb-2">
+                                <span className="flex items-center gap-2">
+                                    <Icon name="Users" size={18} />
+                                    Youth Population Density
+                                </span>
+                                <span className="text-cyan-500">{demographics}/10</span>
+                            </label>
+                            <input
+                                type="range"
+                                min="1"
+                                max="10"
+                                value={demographics}
+                                onChange={(e) => setDemographics(parseInt(e.target.value))}
+                                className="w-full"
+                            />
+                            <p className="text-sm text-slate-400 mt-1">
+                                Concentration of 15-29 age group (age-crime curve consideration)
+                            </p>
+                        </div>
+
+                        {/* Seasonality */}
+                        <div>
+                            <label className="flex items-center gap-2 text-white font-semibold mb-2">
+                                <Icon name="Sun" size={18} />
+                                Season/Time Period
+                            </label>
+                            <select
+                                value={seasonality}
+                                onChange={(e) => setSeasonality(e.target.value)}
+                                className="w-full p-3 rounded-none bg-neutral-800 border border-neutral-700 text-white border border-slate-600 focus:border-blue-500 focus:outline-none"
+                            >
+                                <option value="winter">Winter (Dec-Feb)</option>
+                                <option value="spring">Spring (Mar-May)</option>
+                                <option value="summer">Summer (Jun-Aug)</option>
+                                <option value="fall">Fall (Sep-Nov)</option>
+                            </select>
+                            <p className="text-sm text-slate-400 mt-1">
+                                Seasonal crime patterns (routine activities, temperature effects)
+                            </p>
+                        </div>
+
+                        {/* Intervention Scenario */}
+                        <div>
+                            <label className="flex items-center gap-2 text-white font-semibold mb-2">
+                                <Icon name="Shield" size={18} />
+                                Intervention Strategy
+                            </label>
+                            <select
+                                value={intervention}
+                                onChange={(e) => setIntervention(e.target.value)}
+                                className="w-full p-3 rounded-none bg-neutral-800 border border-neutral-700 text-white border border-slate-600 focus:border-blue-500 focus:outline-none"
+                            >
+                                <option value="none">No Intervention</option>
+                                <option value="lighting">Enhanced Lighting</option>
+                                <option value="patrols">Increased Patrols</option>
+                                <option value="cctv">CCTV Installation</option>
+                                <option value="community">Community Programs</option>
+                                <option value="comprehensive">Comprehensive Strategy</option>
+                            </select>
+                            <p className="text-sm text-slate-400 mt-1">
+                                Predicted impact of crime prevention initiatives
+                            </p>
+                        </div>
+                    </div>
+
+                    <button
+                        onClick={predictCrimeTrends}
+                        className="w-full bg-cyan-900 border border-cyan-500 text-cyan-100 hover:bg-cyan-800 hover:text-white text-white font-bold py-4 rounded-none transition-colors mt-6"
+                    >
+                        Generate Prediction Model
+                    </button>
+
+                    {result && (
+                        <div className="mt-8 space-y-6">
+                            {/* Prediction Summary */}
+                            <div className="p-6 bg-neutral-950 rounded-none border-2 border-slate-700">
+                                <h3 className="text-2xl font-bold text-white mb-4">Predicted Crime Rate</h3>
+
+                                <div className="flex items-center justify-between mb-6">
+                                    <div>
+                                        <div className="text-5xl font-bold text-cyan-500">
+                                            {result.predictedRate}
+                                        </div>
+                                        <div className="text-sm text-slate-400 mt-1">
+                                            per 1000 population
+                                        </div>
+                                    </div>
+
+                                    <div className="text-right">
+                                        <div className={`text-3xl font-bold ${result.changeDirection === 'increase' ? 'text-red-400' :
+                                            result.changeDirection === 'decrease' ? 'text-green-400' :
+                                                'text-yellow-400'
+                                            }`}>
+                                            {result.changeDirection === 'increase' ? '↑' :
+                                                result.changeDirection === 'decrease' ? '↓' : '→'}
+                                            {result.change}%
+                                        </div>
+                                        <div className="text-sm text-slate-400 mt-1">
+                                            vs historical
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="bg-neutral-900 border border-neutral-800 p-4 rounded-none">
+                                    <div className="text-sm text-slate-400 mb-2">95% Confidence Interval</div>
+                                    <div className="flex items-center gap-3">
+                                        <span className="text-white font-bold">{result.lowerBound}</span>
+                                        <div className="flex-1 h-3 bg-neutral-800 border border-neutral-700 rounded-none overflow-hidden">
+                                            <div
+                                                className="h-full bg-gradient-to-r from-blue-600 to-blue-400"
+                                                style={{
+                                                    marginLeft: `${(result.lowerBound / result.upperBound) * 100}%`,
+                                                    width: `${((result.upperBound - result.lowerBound) / result.upperBound) * 100}%`
+                                                }}
+                                            />
+                                        </div>
+                                        <span className="text-white font-bold">{result.upperBound}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Trend Visualization */}
+                            <div className="p-6 bg-neutral-950 rounded-none">
+                                <h4 className="text-xl font-semibold text-white mb-4">12-Month Trend Forecast</h4>
+                                <div className="space-y-2">
+                                    {result.trendData.map((data, index) => (
+                                        <div key={index} className="flex items-center gap-3">
+                                            <span className="text-sm text-slate-400 w-8">{data.month}</span>
+                                            <div className="flex-1 flex gap-2">
+                                                <div className="flex-1">
+                                                    <div className="flex items-center gap-2 mb-1">
+                                                        <div className="w-3 h-3 bg-cyan-900 border border-cyan-500 text-cyan-100 rounded-none"></div>
+                                                        <span className="text-xs text-slate-400">Predicted: {data.predicted}</span>
+                                                    </div>
+                                                    <div className="h-4 bg-neutral-800 border border-neutral-700 rounded-none overflow-hidden">
+                                                        <div
+                                                            className="h-full bg-cyan-900 border border-cyan-500 text-cyan-100"
+                                                            style={{ width: `${data.predicted}%` }}
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div className="flex-1">
+                                                    <div className="flex items-center gap-2 mb-1">
+                                                        <div className="w-3 h-3 bg-slate-500 rounded-none"></div>
+                                                        <span className="text-xs text-slate-400">Historical: {data.historical}</span>
+                                                    </div>
+                                                    <div className="h-4 bg-neutral-800 border border-neutral-700 rounded-none overflow-hidden">
+                                                        <div
+                                                            className="h-full bg-slate-500"
+                                                            style={{ width: `${data.historical}%` }}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Key Insights */}
+                            <div className="p-6 bg-neutral-950 rounded-none">
+                                <h4 className="text-xl font-semibold text-white mb-3">Model Insights:</h4>
+                                <ul className="space-y-2">
+                                    {result.insights.map((insight, index) => (
+                                        <li key={index} className="text-slate-300 flex gap-2">
+                                            <span className="text-cyan-500 mt-1">•</span>
+                                            <span>{insight}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+
+                            {/* AI Insights Button */}
+                            {isConnected && (
+                                <button
+                                    onClick={getAIPredictiveInsights}
+                                    disabled={loadingInsight}
+                                    className="w-full bg-amber-900 border border-amber-600 hover:bg-purple-700 disabled:bg-slate-600 text-white font-bold py-4 rounded-none transition-colors flex items-center justify-center gap-2"
+                                >
+                                    <Icon name="Brain" size={20} />
+                                    {loadingInsight ? 'Analyzing with AI...' : 'Get AI Insights'}
+                                </button>
+                            )}
+
+                            {/* AI Insights Display */}
+                            {aiInsight && (
+                                <div className="p-6 bg-neutral-900 border border-amber-900/50 bg-opacity-30 rounded-none border-2 border-purple-700">
+                                    <h4 className="text-xl font-semibold text-white mb-3 flex items-center gap-2">
+                                        <Icon name="Brain" size={24} />
+                                        AI Analysis (Llama 3.2)
+                                    </h4>
+                                    <div className="text-purple-100 whitespace-pre-wrap">{aiInsight}</div>
+                                </div>
+                            )}
+
+                            {/* Model Disclaimer */}
+                            <div className="p-4 bg-orange-900 bg-opacity-30 rounded-none border-l-4 border-orange-500">
+                                <p className="text-sm text-orange-100">
+                                    <strong className="text-orange-400">Model Limitations:</strong> This is a simplified
+                                    predictive model for educational purposes. Real-world crime prediction requires sophisticated
+                                    machine learning, extensive datasets, ethical oversight, and should never be used for
+                                    individual-level predictions or discriminatory practices. Use only for strategic planning
+                                    and resource allocation analysis.
+                                </p>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        // Render the app
+        ReactDOM.render(<CrimeSimulatorSuite />, document.getElementById('root'));
+    </script>
+</body>
+
+</html>

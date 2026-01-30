@@ -1,0 +1,10 @@
+{
+    "evidence_id": "EVD-20260127-195634",
+    "case_id": "CSE-2024-001",
+    "mid_slice_idx": 77,
+    "wm_bits_len": 2800,
+    "password_hash": "c46b5cfab10e40577be1d3116f7d9cac8f3d6fffb7d66fadc1393adb822399ad",
+    "original_hash": "1671dfab75fbaaede29989011cabcef12b7825c72a315f293441b698a8e8d39c",
+    "marked_hash": "884a8a21ee43857a21776d8c2784f6d41dba3185c8b7eb1e2a5ceda5af15e6a4",
+    "encrypted_hash": "aedc3adf5c1846dc341e9941de864cc440cd5c009c23013045e7fb657e1264e1"
+}

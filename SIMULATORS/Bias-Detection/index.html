@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FORENSIC BIAS DETECTION SYSTEM - CLASSIFIED</title>
+    <link rel="icon" type="image/png" href="android-chrome-512x512.png">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>⚠ FORENSIC BIAS DETECTION SYSTEM</h1>
+            <div class="case-id">CASE #: FBD-2026-001 | CLEARANCE: LEVEL 5 | ACTIVE INVESTIGATION</div>
+            <div class="header-stats">
+                <div class="stat-box">
+                    <div class="stat-label">TOTAL SUBJECTS</div>
+                    <div class="stat-value" id="totalSubjects">800</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">DEMOGRAPHIC GROUPS</div>
+                    <div class="stat-value">4</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">BIAS DETECTED</div>
+                    <div class="stat-value" style="color: var(--evidence-red);" id="biasStatus">CONFIRMED</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">SYSTEM STATUS</div>
+                    <div class="stat-value" style="color: var(--clearance-green);">OPERATIONAL</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Control Panel -->
+        <div class="control-panel">
+            <div class="control-grid">
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>DECISION THRESHOLD</span>
+                        <span class="control-value" id="thresholdValue">0.65</span>
+                    </div>
+                    <input type="range" id="thresholdSlider" min="0" max="1" step="0.01" value="0.65">
+                    <div style="font-size: 0.8rem; color: var(--terminal-text); margin-top: 0.5rem; opacity: 0.7;">
+                        Higher values = More stringent detection | Lower false positives
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>TARGET GROUP</span>
+                    </div>
+                    <select id="groupSelector">
+                        <option value="all">ALL GROUPS - COMPARATIVE ANALYSIS</option>
+                        <option value="male">MALE SUBJECTS</option>
+                        <option value="female">FEMALE SUBJECTS</option>
+                        <option value="trauma">TRAUMA HISTORY</option>
+                        <option value="cultural">CULTURAL MINORITY</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>VISUALIZATION MODE</span>
+                    </div>
+                    <select id="vizMode">
+                        <option value="scatter">PHYSIOLOGICAL DISTRIBUTION</option>
+                        <option value="comparison">BIAS COMPARISON</option>
+                        <option value="roc">ROC CURVE ANALYSIS</option>
+                        <option value="confusion">CONFUSION MATRIX</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Evidence Cards -->
+        <div class="evidence-grid" id="evidenceGrid">
+            <!-- Will be populated by JavaScript -->
+        </div>
+
+        <!-- Main Analysis -->
+        <div class="analysis-section">
+            <div class="section-header">
+                <div class="section-icon">📊</div>
+                <div class="section-title">VISUAL EVIDENCE ANALYSIS</div>
+            </div>
+            <div class="chart-container">
+                <canvas id="mainChart"></canvas>
+            </div>
+            <div style="text-align: center; font-family: 'Share Tech Mono', monospace; color: var(--crime-yellow); font-size: 0.9rem;">
+                <span class="status-indicator warning"></span>
+                Current visualization: <span id="currentViz">PHYSIOLOGICAL DISTRIBUTION</span>
+            </div>
+        </div>
+
+        <!-- AI Analysis Panel -->
+        <div class="ai-panel">
+            <div class="ai-controls">
+                <textarea id="aiQuery" placeholder="Enter your forensic analysis query for AI investigation...
+
+Examples:
+• Analyze the bias patterns in female subjects at threshold 0.70
+• What are the ethical implications of these findings?
+• Suggest calibration strategies for trauma survivors
+• Compare false positive rates across all groups"></textarea>
+                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                    <button onclick="analyzeWithAI()" id="analyzeBtn">
+                        🔍 ANALYZE
+                    </button>
+                    <button onclick="generateReport()" style="background: linear-gradient(135deg, var(--investigation-blue), var(--clearance-green));">
+                        📋 REPORT
+                    </button>
+                </div>
+            </div>
+            <div class="ai-response" id="aiResponse">
+<span style="color: var(--investigation-blue);">⚡ AI FORENSIC ANALYST READY</span>
+
+Connected to: Llama 3.2 via Ollama
+Status: <span style="color: var(--clearance-green);">ONLINE</span>
+Capabilities: Bias pattern analysis, ethical assessment, statistical interpretation
+
+Waiting for analysis request...
+            </div>
+        </div>
+
+        <!-- Key Findings -->
+        <div class="analysis-section">
+            <div class="section-header">
+                <div class="section-icon">⚠</div>
+                <div class="section-title">CRITICAL FINDINGS & IMPLICATIONS</div>
+            </div>
+            <div class="findings-grid" id="findingsGrid">
+                <!-- Will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <span class="status-indicator active"></span>
+            FORENSIC BIAS DETECTION SYSTEM v2.1 | POWERED BY LLAMA 3.2 | CLASSIFICATION: RESTRICTED
+            <br>
+            <span style="font-size: 0.8rem; margin-top: 0.5rem; display: block;">
+                WARNING: This system reveals systematic bias in deception detection. Findings may challenge current forensic practices.
+            </span>
+        </div>
+    </div>
+
+    <script src="script.js" type="text/javascript"></script>
+</body>
+</html>

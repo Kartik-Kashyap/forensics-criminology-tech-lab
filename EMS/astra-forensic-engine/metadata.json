@@ -1,0 +1,8 @@
+
+{
+  "name": "Astra Forensic Engine",
+  "description": "A high-fidelity forensic case analysis platform for students and researchers, featuring structured evidence analysis, bias-aware reasoning, and explainable AI support.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}

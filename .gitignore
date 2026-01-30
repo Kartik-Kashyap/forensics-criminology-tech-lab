@@ -1,0 +1,65 @@
+(rejected)/
+(garbage)/
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.pyc
+.env
+.venv/
+venv/
+
+# Node / React
+node_modules/
+dist/
+build/
+npm-debug.log*
+
+# Models / large files
+*.bin
+*.gguf
+*.safetensors
+
+# Logs
+*.log
+
+# Archives
+*.zip
+
+# IDE
+.vscode/
+.idea/
+
+# Temporary exports
+exported-assets/
+*.pyc
+.env
+.venv/
+venv/
+
+# Node / React
+node_modules/
+dist/
+build/
+npm-debug.log*
+
+# Models / large files
+*.bin
+*.gguf
+*.safetensors
+
+# Logs
+*.log
+
+# Archives
+*.zip
+
+# IDE
+.vscode/
+.idea/
+
+# Temporary exports
+exported-assets/

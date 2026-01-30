@@ -1,0 +1,34 @@
+# P-FEICS v2.0 - Python Dependencies
+# Court-Admissible Forensic Evidence System
+
+# Core Scientific Computing
+numpy==1.24.3
+scipy==1.11.1
+matplotlib==3.7.2
+
+# Wavelet Analysis
+PyWavelets==1.4.1
+
+# Cryptography
+pycryptodome==3.18.0
+
+# GUI
+# tkinter (included in Python standard library)
+
+# PDF Generation
+reportlab==4.0.4
+
+# Optional: For production deployment
+# psutil==5.9.5              # System monitoring
+# cryptography==41.0.3       # Alternative crypto library
+# python-dotenv==1.0.0       # Environment configuration
+
+# Development & Testing
+# pytest==7.4.0              # Unit testing
+# black==23.7.0              # Code formatting
+# mypy==1.4.1                # Type checking
+# pylint==2.17.5             # Linting
+
+# Documentation
+# sphinx==7.1.2              # Documentation generation
+# sphinx-rtd-theme==1.3.0    # ReadTheDocs theme
