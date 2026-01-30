@@ -205,6 +205,8 @@ This project is open for:
 * Modification
 * Academic and research use
 
+See the `LICENSE` file for full terms.
+
 ---
 
 ## 📎 Disclaimer

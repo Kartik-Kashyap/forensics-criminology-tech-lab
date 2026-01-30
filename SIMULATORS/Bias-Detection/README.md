@@ -47,27 +47,6 @@ This simulator was built to:
 
 ---
 
-## Table of Contents
-
-[TOC]
-
-<!-- 1. System Overview
-2. Scope and Intended Use
-3. Architecture
-4. Methodology
-5. Statistical Metrics and Logic
-6. Visualization Modes
-7. AI-Assisted Forensic Analysis
-8. Installation and Usage
-9. Features
-10. Limitations
-11. Future Improvements (TODO)
-12. Ethical Considerations
-13. Credits
-14. License -->
-
----
-
 ## System Overview
 
 The system simulates deception detection decisions based on a **continuous physiological response score** ∈ [0, 1].

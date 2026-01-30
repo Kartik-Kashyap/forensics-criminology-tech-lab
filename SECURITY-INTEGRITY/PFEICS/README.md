@@ -477,13 +477,21 @@ python p_feics_enhanced.py --production
 
 ## 🏆 Acknowledgments
 
-**Our Team:**
+### **Our Team:**
 <!-- - Lead Architect: [Senior Cryptography Engineer]
 - Security Analyst: [Forensic Security Specialist]
 - Legal Consultant: [Forensic Evidence Attorney]
 - Domain Expert: [Forensic Psychologist, ABFE] -->
-- Lead Engineer: Kartik Kashyap
-- Domain Expert: Vaibhav Laxmi
+**Kartik Kashyap**<br>
+Software Developer<br>
+B.Tech Information Technology<br>
+Criminology, Forensics, and Human-Centered AI Research Enthusiast<br>
+Contact: [kartikkashyapworks247@gmail.com](mailto:kartikkashyapworks247@gmail.com)<br>
+
+**Vaibhav Laxmi**<br>
+Forensic & Criminology Domain Advisor<br>
+B\.Sc. M\.Sc. Criminology & Forensic Science, NFSU<br>
+Contact: [vaibhav.bsmscrfs2242925@nfsu.ac.in](mailto:vaibhav.bsmscrfs2242925@nfsu.ac.in)<br>
 
 <!-- **Standards Bodies:** -->
 <!-- - NIST (cryptographic standards)

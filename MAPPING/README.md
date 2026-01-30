@@ -11,23 +11,6 @@ This repository intentionally contains **multiple approaches** to the *same crim
 
 ---
 
-## Table of Contents
-
-1. Project Motivation & Research Scope
-1. Data Sources & Provenance
-2. Repository Structure (What lives where & why)
-3. QGIS‑based Analysis (Static Cartographic Workflow)
-4. Python GIS Pipeline (Why automation mattered)
-5. Interactive Crime Analytics Dashboard (Streamlit + Folium)
-6. Methodology & Mathematical Concepts
-7. How to Run (Step‑by‑Step)
-8. Limitations & Known Gaps
-9.  Future Improvements (TODO)
-10. Credits
-11. License
-
----
-
 ## 1. Project Motivation & Research Scope
 
 Crime mapping is often taught either as:

@@ -55,33 +55,6 @@ It serves as a **proof-of-concept forensic evidence handling system**, not a fin
 
 ---
 
-## 📑 Table of Contents
-
-[TOC]
-<!-- 
-1. System Overview
-2. Supported Evidence Scope
-3. Architecture & Workflow
-4. Methodology
-
-   * Cryptography
-   * Watermarking
-   * Image Quality Metrics
-   * Chain of Custody
-5. Features
-6. Screenshots
-7. Installation & Prerequisites
-8. How to Run
-9. Attack Simulation (Tamper Tool)
-10. Legal Reporting
-11. Limitations & Incompleteness
-12. Future Improvements
-13. Ethical & Legal Considerations
-14. Credits
-15. License -->
-
----
-
 ## 🏗️ System Overview
 
 At a high level, the system performs:
@@ -348,17 +321,16 @@ The system auto-generates:
 
 ## 👤 Author & Credits
 
-**Kartik Kashyap** (me)
-B.Tech Information Technology
-Software Developer
-Forensic Technology & Research Enthusiast
-Contact: kartikkashyapworks247@gmail.com
+**Kartik Kashyap**<br>
+Software Developer<br>
+B.Tech Information Technology<br>
+Criminology, Forensics, and Human-Centered AI Research Enthusiast<br>
+Contact: [kartikkashyapworks247@gmail.com](mailto:kartikkashyapworks247@gmail.com)<br>
 
-
-**Vaibhav Laxmi** (my wife)
-B\.Sc. M\.Sc. Criminology & Forensic Science, NFSU
-Forensic & Criminology Domain Advisor *(provided guidance on chain‑of‑custody procedures and core forensic principles)*
-Contact: vaibhav.bsmscrfs2242925@nfsu.ac.in
+**Vaibhav Laxmi**<br>
+Forensic & Criminology Domain Advisor<br>
+B\.Sc. M\.Sc. Criminology & Forensic Science, NFSU<br>
+Contact: [vaibhav.bsmscrfs2242925@nfsu.ac.in](mailto:vaibhav.bsmscrfs2242925@nfsu.ac.in)<br>
 
 
 **Inspired by:**

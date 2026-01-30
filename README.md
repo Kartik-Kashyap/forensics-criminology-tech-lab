@@ -158,7 +158,7 @@ To explore:
 **Kartik Kashyap** <br>
 Software Developer<br>
 B.Tech IT<br>
-Interests: Forensics, Criminology, Human‑Centered AI, Law, Humanology, Ethics<br>
+Interests: Forensics, Criminology, Human‑Centered AI, Technology Law, Humanology, Ethics<br>
 
 ### Forensic Domain Advisor
 
@@ -168,10 +168,10 @@ Interests: Forensics, Criminology, Understanding Human Behavior, Criminal Psycho
 
 ### Inspiration & Acknowledgement
 
-**Mr. Rithin Parker Joseph**
+**Mr. Rithin Parker Joseph**<br>
 Filmmaker, Assistant Professor NFSU (Behavioural Forensics), Researcher (Criminal Psychology)
 
-> *While not directly involved in this repository, Mr. Rithin Parker Joseph’s work at the intersection of psychology, forensics, research, and visual storytelling has been a major source of inspiration for the direction and philosophy of many projects here.*
+> *While not directly involved in this repository, Mr. Rithin Parker Joseph’s work at the intersection of psychology, forensics, research, and (my favorite) filmmaking has been a major source of inspiration for the direction and philosophy of many projects here.*
 
 ---
 

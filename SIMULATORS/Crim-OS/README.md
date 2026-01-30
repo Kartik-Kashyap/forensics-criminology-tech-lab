@@ -11,33 +11,6 @@ It integrates **criminological theory, rule-based modeling, and optional local L
 
 ---
 
-## Table of Contents
-
-[TOC]
-
-<!-- 1. Overview
-2. Motivation and Research Purpose
-3. System Architecture
-4. Core Modules
-
-   * Risk Scenario Simulator
-   * Hotspot Analysis Simulator
-   * Vulnerability Assessment Simulator
-   * Predictive Modeling Simulator
-5. Methodology and Theoretical Foundations
-6. Scoring Models and Logic
-7. AI Integration (Ollama + LLaMA)
-8. Tech Stack
-9. Installation and Running Instructions
-10. Features
-11. Limitations and Incompleteness
-12. Future Improvements
-13. Ethical and Legal Considerations
-14. Credits
-15. License -->
-
----
-
 ## 1. Overview
 
 CRIM-OS provides a **modular criminology simulation environment** where users can manipulate environmental, social, and temporal variables to observe:
@@ -363,13 +336,12 @@ This is a **research and teaching prototype**, not a deployment-ready system.
 Software Developer<br>
 B.Tech Information Technology<br>
 Criminology, Forensics, and Human-Centered AI Research Enthusiast<br>
-Contact: kartikkashyapworks247@gmail.com<br>
-
+Contact: [kartikkashyapworks247@gmail.com](mailto:kartikkashyapworks247@gmail.com)<br>
 
 **Vaibhav Laxmi**<br>
 Forensic & Criminology Domain Advisor<br>
 B\.Sc. M\.Sc. Criminology & Forensic Science, NFSU<br>
-Contact: vaibhav.bsmscrfs2242925@nfsu.ac.in<br>
+Contact: [vaibhav.bsmscrfs2242925@nfsu.ac.in](mailto:vaibhav.bsmscrfs2242925@nfsu.ac.in)<br>
 
 
 **Conceptual inspiration:**
