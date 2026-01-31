@@ -101,6 +101,31 @@ This ensures predictions reflect **urban growth effects**, not static census dat
 
 ---
 
+## 📓 Research & Analysis (Jupyter Notebook)
+
+The repository includes a comprehensive research notebook, `crp.ipynb`, which acts as the **forensic lab** for this project. This notebook documents the exploratory data analysis (EDA) and model selection process.
+
+**Key contents of `crp.ipynb`:**
+
+* **Data Visualization:** Visual analysis of crime trends across the 19 metropolitan cities (2014–2021).
+* **Model Comparison:** While the web app uses Random Forest, the notebook contains experiments with multiple algorithms to determine the best fit:
+    * Support Vector Machines (SVM)
+    * K-Nearest Neighbors (KNN)
+    * Decision Trees
+    * Neural Networks (MLPRegressor)
+* **Statistical Reporting:** Generates the foundational metrics used to validate the final model.
+
+To view the analysis:
+```bash
+jupyter notebook crp.ipynb
+```
+or
+```bash
+python -m jupyter notebook crp.ipynb
+```
+
+---
+
 ## 🛠️ Installation & Setup
 
 ### 1️⃣ Clone the Repository
@@ -137,7 +162,7 @@ Crime-Rate-Prediction/
 │
 ├── app.py                # Flask application & inference logic
 ├── regenerate_model.py   # Model training & regeneration
-├── crp.ipynb             # Jupyter notebook
+├── crp.ipynb             # Jupyter notebook (EDA & Model Selection)
 │
 ├── Model/
 │   └── model.pkl         # Serialized Random Forest model
