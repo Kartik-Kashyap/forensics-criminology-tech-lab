@@ -1,0 +1,4 @@
+{
+  "name": "BioGraph Auth",
+  "description": "An AI-enhanced graphical password authentication system that uses Gemini to analyze behavioral biometrics (mouse dynamics, timing, and precision) for anomaly detection."
+}

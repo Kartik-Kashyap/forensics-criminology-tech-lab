@@ -64,6 +64,8 @@ forensics-criminology-tech-lab/
 │   └── EMS-human-centered/
 │
 ├── MAPPING/                    # GIS crime mapping, QGIS + Python pipelines
+|   ├── QGIS
+|   └── Py-GIS
 │
 ├── ML-FORENSICS/               # Machine learning applied to crime & forensics
 │   ├── Crime Rate Prediction
@@ -71,8 +73,13 @@ forensics-criminology-tech-lab/
 │   └── Suspect Detection System
 │
 ├── SECURITY-INTEGRITY/         # Evidence security, tamper detection, compliance
+|   ├── Biograph-Authentication
+|   ├── Forensic-Medical-Evidence-Security-System
+|   └── PFEICS
 │
-├── SIMULATORS/                 # Bias, decision-making & investigative simulations
+├── SIMULATORS/                 # Bias, decision-making, hotspot analysis, investigative simulations
+|   ├── Bias-Detection
+|   └── Crim-OS
 │
 ├── .gitignore
 ├── LICENSE
@@ -106,6 +113,13 @@ forensics-criminology-tech-lab/
 * Chain‑of‑custody simulations
 * Tamper detection in medical & digital evidence
 * Human‑centered EMS designs
+
+### 🔐 Authentication & Behavioral Biometrics
+* Graphical password systems beyond text-based authentication
+* Mouse dynamics and behavioral signatures as a second factor
+* Explainable AI for trust and transparency in security decisions
+* **BioGraph Auth** — A research prototype for graphical authentication enhanced with behavioral biometrics and explainable AI, exploring how *how* a user authenticates can be as important as *what* they know.
+
 
 ### 🤖 Machine Learning in Crime Systems
 
@@ -189,4 +203,4 @@ This repository will continue to evolve.
 
 Some projects may remain unfinished by design — because asking the *right questions* often matters more than shipping polished answers.
 
-If you are a student, researcher, or practitioner interested in **crime, forensics, or human‑centered systems**, feel free to explore, critique, and build upon this work.
+If you are a student, researcher, or practitioner interested in **crime, forensics, security, or human‑centered systems**, feel free to explore, critique, and build upon this work.
