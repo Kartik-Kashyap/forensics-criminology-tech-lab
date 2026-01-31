@@ -544,7 +544,7 @@ If you use this system in academic research, please cite:
   title={BioGraph Auth: AI-Enhanced Graphical Authentication with Behavioral Biometrics},
   author={Kashyap, Kartik and Laxmi, Vaibhav},
   year={2026},
-  url={https://github.com/Kartik-Kashyap/biograph-auth},
+  url={https://github.com/Kartik-Kashyap/forensics-criminology-tech-lab/tree/main/SECURITY-INTEGRITY/Biograph-Authentication},
   note={Research prototype for behavioral biometric authentication}
 }
 ```
