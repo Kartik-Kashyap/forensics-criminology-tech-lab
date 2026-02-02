@@ -89,20 +89,21 @@ forensics-criminology-tech-lab/
 ---
 
 ## 🔬 Major Project Themes (What You’ll Find Here)
+*(direct links to the directories are given for easy navigation)*
 
 ### 🧠 AI & Reasoning in Forensics
 
-* NeuroLex (EEG + explainable AI for court contexts)
-* AI personas for forensic education
-* Local LLMs (Ollama) for explainable forensic narratives
+* [NeuroLex](https://github.com/Kartik-Kashyap/forensics-criminology-tech-lab/tree/main/AI-FORENSIC-LEARNING/Neurolex) (EEG + explainable AI for court contexts)
+* AI personas for [forensic education](https://github.com/Kartik-Kashyap/forensics-criminology-tech-lab/tree/main/AI-FORENSIC-LEARNING/Forensic-Interactive-Learning-System)
+* Local LLMs (Ollama) for explainable forensic narratives, strengthening [forensic reasoning](https://github.com/Kartik-Kashyap/forensics-criminology-tech-lab/tree/main/AI-FORENSIC-LEARNING/Forensic-Reasoning), hypothesis management, timeline construction, and cognitive bias awareness 
 
-### 🗺️ GIS & Crime Mapping
+### 🗺️ GIS & Crime [Mapping](https://github.com/Kartik-Kashyap/forensics-criminology-tech-lab/tree/main/MAPPING)
 
 * QGIS‑based district‑level crime analysis
 * Python pipelines replacing manual GIS repetition
 * Explicit handling of IPC schema changes and data ethics
 
-### 📊 Dashboards for Awareness & Investigation
+### 📊 [Dashboards](https://github.com/Kartik-Kashyap/forensics-criminology-tech-lab/tree/main/DASHBOARDS) for Awareness & Investigation
 
 * Public‑facing crime awareness dashboards
 * Restricted forensic / investigator‑mode analytics
@@ -111,26 +112,26 @@ forensics-criminology-tech-lab/
 ### 🧾 Evidence Management & Integrity
 
 * Chain‑of‑custody simulations
-* Tamper detection in medical & digital evidence
-* Human‑centered EMS designs
+* Tamper detection in [medical](https://github.com/Kartik-Kashyap/forensics-criminology-tech-lab/tree/main/SECURITY-INTEGRITY/Forensic-Medical-Evidence-Security-System) & [digital evidence](https://github.com/Kartik-Kashyap/forensics-criminology-tech-lab/tree/main/SECURITY-INTEGRITY/PFEICS) like EEG
+* [Human‑centered EMS](https://github.com/Kartik-Kashyap/forensics-criminology-tech-lab/tree/main/EMS/EMS-human-centered) designs
 
 ### 🔐 Authentication & Behavioral Biometrics
 * Graphical password systems beyond text-based authentication
 * Mouse dynamics and behavioral signatures as a second factor
 * Explainable AI for trust and transparency in security decisions
-* **BioGraph Auth** — A research prototype for graphical authentication enhanced with behavioral biometrics and explainable AI, exploring how *how* a user authenticates can be as important as *what* they know.
+* **[BioGraph Auth](https://github.com/Kartik-Kashyap/forensics-criminology-tech-lab/tree/main/SECURITY-INTEGRITY/Biograph-Authentication)** — A research prototype for graphical authentication enhanced with behavioral biometrics and explainable AI, exploring how *how* a user authenticates can be as important as *what* they know.
 
 
 ### 🤖 Machine Learning in Crime Systems
 
-* Crime rate prediction
-* Network anomaly detection
-* Face‑based suspect detection (with ethical notes)
+* [Crime rate prediction](https://github.com/Kartik-Kashyap/forensics-criminology-tech-lab/tree/main/ML-FORENSICS/Crime-Rate-Prediction-main)
+* [Network anomaly detection](https://github.com/Kartik-Kashyap/forensics-criminology-tech-lab/tree/main/ML-FORENSICS/Network-Anomaly-Detection-ML)
+* Face and Gait‑based [suspect detection](https://github.com/Kartik-Kashyap/forensics-criminology-tech-lab/tree/main/ML-FORENSICS/Suspect-Detection-System/SDS-With-Face-Recognition) (with ethical notes)
 
 ### 🧪 Simulations & Experiments
 
-* Bias detection systems
-* Criminology‑inspired OS & decision simulators
+* [Bias detection](https://github.com/Kartik-Kashyap/forensics-criminology-tech-lab/tree/main/SIMULATORS/Bias-Detection) systems
+* Criminology‑inspired [OS & decision simulators](https://github.com/Kartik-Kashyap/forensics-criminology-tech-lab/tree/main/SIMULATORS/Crim-OS)
 
 ---
 
