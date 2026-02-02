@@ -172,14 +172,16 @@ To explore:
 
 **Kartik Kashyap** <br>
 Software Developer<br>
-B.Tech IT<br>
-Interests: Forensics, Criminology, Human‑Centered AI, Technology Law, Humanology, Ethics<br>
+B.Tech Information Technology<br>
+*Interests: Forensics, Criminology, Human‑Centered AI, Technology Law, Humanology, Ethics*<br>
+Contact: kartikkashyapworks247@gmail.com
 
 ### Forensic Domain Advisor
 
 **Vaibhav Laxmi**<br>
-B.Sc / M.Sc Criminology & Forensic Science, NFSU<br>
-Interests: Forensics, Criminology, Understanding Human Behavior, Criminal Psychology, History
+B\.Sc / M\.Sc Criminology & Forensic Science, NFSU<br>
+*Interests: Forensics, Criminology, Understanding Human Behavior, Criminal Psychology, History*<br>
+Contact: vaibhav.bsmscrfs2242925@nfsu.ac.in
 
 ### Inspiration & Acknowledgement
 
