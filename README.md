@@ -131,7 +131,7 @@ forensics-criminology-tech-lab/
 ### 🧪 Simulations & Experiments
 
 * [Bias detection](https://github.com/Kartik-Kashyap/forensics-criminology-tech-lab/tree/main/SIMULATORS/Bias-Detection) systems
-* Criminology‑inspired [OS & decision simulators](https://github.com/Kartik-Kashyap/forensics-criminology-tech-lab/tree/main/SIMULATORS/Crim-OS)
+* [Criminology Operations Simulator](https://github.com/Kartik-Kashyap/forensics-criminology-tech-lab/tree/main/SIMULATORS/Crim-OS) (crime risk assessment, hotspot analysis, environmental vulnerability auditing, and simplified predictive modeling)
 
 ---
 
